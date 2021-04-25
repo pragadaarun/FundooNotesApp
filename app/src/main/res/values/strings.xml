@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">Fundoo Notes</string>
     <string name="register">Register</string>
-    <string name="new_to_application">New to Application?</string>
+    <string name="new_to_application">New to Application? SignUp</string>
     <string name="login">Login</string>
     <string name="email_address">Email</string>
     <string name="password">Password</string>
     <string name="show_password">Show Password</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
