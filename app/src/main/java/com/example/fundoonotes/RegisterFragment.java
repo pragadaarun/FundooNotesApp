@@ -1,5 +1,7 @@
 package com.example.fundoonotes;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
@@ -9,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,19 +19,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.concurrent.Executor;
 
 public class RegisterFragment extends Fragment {
 
-    private EditText fullName, emailText, passwordText;
+    private EditText fullName, emailText, passwordText, phoneText;
     private Button registerButton;
     private TextView loginText;
-    FirebaseAuth mAuth;
+    FirebaseAuth mFirebaseAuth;
 
     private RegisterViewModel mViewModel;
 
@@ -42,7 +38,9 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
         return inflater.inflate(R.layout.register_fragment, container, false);
+
     }
 
     @Override
@@ -50,68 +48,25 @@ public class RegisterFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
 
-        mAuth = FirebaseAuth.getInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
 
         fullName = (EditText) getView().findViewById(R.id.fullName);
+        phoneText = (EditText) getView().findViewById(R.id.phoneText);
         emailText = (EditText) getView().findViewById(R.id.emailText);
         passwordText = (EditText) getView().findViewById(R.id.passwordText);
         registerButton = (Button) getView().findViewById(R.id.registerButton);
         loginText = (TextView) getView().findViewById(R.id.loginText);
 
-        registerButton.setOnClickListener(v -> {
+        registerButton.setOnClickListener(this::registerUser);
 
-            String name = fullName.getText().toString();
-            String email = emailText.getText().toString();
-            String password = passwordText.getText().toString();
+        loginText.setOnClickListener(v -> {
 
-            if (TextUtils.isEmpty(name) || name.length() < 3) {
-                fullName.setError("Requires Your Name");
-                Toast.makeText(getContext(),
-                        "Please Enter valid Name",
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (TextUtils.isEmpty(email) || !email.contains("@")) {
-                emailText.setError("Requires Email Address");
-                Toast.makeText(getContext(),
-                        "Please Enter valid Email Address",
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (TextUtils.isEmpty(password)) {
-                passwordText.setError("Requires password");
-                Toast.makeText(getContext(),
-                        "Please Enter valid Password",
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (password.length() < 8) {
-                passwordText.setError("Enter minimum Eight Characters");
-                Toast.makeText(getContext(),
-                        "Password should contain atleast 8 Characters",
-                        Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            mAuth.createUserWithEmailAndPassword(email, password).
-                    addOnCompleteListener(
-                            new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        Intent intent
-                                = new Intent(getContext(),
-                                NotesActivity.class);
-                        startActivity(intent);
-                    } else {
-
-                        Toast.makeText(getContext(),
-                                "SignUp Unsuccessful, Please Try Again",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-                });
+            LoginFragment loginFragment = new LoginFragment();
+            FragmentManager loginFragmentManager = getFragmentManager();
+            FragmentTransaction loginFragmentTransaction = loginFragmentManager
+                    .beginTransaction();
+            loginFragmentTransaction.replace(R.id.register_fragment, loginFragment)
+                    .addToBackStack(null).commit();
 
 
         });
@@ -119,4 +74,56 @@ public class RegisterFragment extends Fragment {
 
     }
 
+    private void registerUser(View v) {
+
+        String name = fullName.getText().toString();
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
+        String phone = phoneText.getText().toString();
+
+        if (name.isEmpty()) {
+            fullName.setError("Please enter name id");
+            fullName.requestFocus();
+        } else if (name.matches("[0-9~`!@#$%^&*()_+={}:;<>,.?/]*")) {
+            fullName.setError("Please Enter Valid Name");
+            fullName.requestFocus();
+        } else if (email.isEmpty() && !(password.isEmpty())) {
+            fullName.setError("Please Enter Email id");
+            fullName.requestFocus();
+        } else if (!email.matches("^[a-zA-Z]+([._+-]{0,1}[a-zA-Z0-9]+)*@[a-zA-Z0-9]+.[a-zA-Z]{2,4}+(?:\\.[a-z]{2,}){0,1}$")) {
+            fullName.setError("Please enter valid email id");
+            fullName.requestFocus();
+        } else if (password.isEmpty() && !(email.isEmpty())) {
+            passwordText.setError("Please Enter Password");
+            passwordText.requestFocus();
+        } else if (!password.matches("(^(?=.*[A-Z]))(?=.*[0-9])(?=.*[a-z])(?=.*[@*&^%#-*+!]{1}).{8,}$")) {
+            passwordText.setError("Valid Password should contain at least 8 characters");
+            passwordText.requestFocus();
+        } else if (phone.isEmpty()) {
+            phoneText.setError("Please Enter Phone Number");
+            phoneText.requestFocus();
+        } else if (!phone.matches("(([0-9]{2})?)[0-9]{10}")) {
+            phoneText.setError("Please Enter Valid Phone Number with country code");
+            phoneText.requestFocus();
+        } else if (email.isEmpty() && password.isEmpty()) {
+            Toast.makeText(getContext(), "Fields Are Empty!",
+                    Toast.LENGTH_SHORT).show();
+        }
+        mFirebaseAuth.createUserWithEmailAndPassword(email, password).
+                addOnCompleteListener(
+                        task -> {
+                            if (task.isSuccessful()) {
+                                Intent intent
+                                        = new Intent(getContext(),
+                                        NotesActivity.class);
+                                startActivity(intent);
+                            } else {
+
+                                Toast.makeText(getContext(),
+                                        "SignUp Unsuccessful, Please Try Again",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+    }
 }

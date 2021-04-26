@@ -26,113 +26,28 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
-    private EditText emailText, passwordText;
-    private TextView signUpText;
-    private Button loginButton;
-    private CheckBox showPassword;
-    private FrameLayout register_fragment;
 
-    private FirebaseAuth mAuth;
-
+    private static final String LOGIN_FRAGMENT_TAG = "LoginFragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mAuth = FirebaseAuth.getInstance();
+        initLoginFragment();
+    }
 
-        emailText = (EditText) findViewById(R.id.emailText);
-        passwordText = (EditText) findViewById(R.id.passwordText);
-        loginButton = (Button) findViewById(R.id.loginButton);
-        signUpText = (TextView) findViewById(R.id.signUpText);
-        showPassword = (CheckBox) findViewById(R.id.showPassword);
-        //register_fragment = (FrameLayout) findViewById(R.id.register_fragment);
+    public void navigateToRegister() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container,new RegisterFragment()).
+                addToBackStack(null).commit();
+    }
 
-        showPassword.setOnCheckedChangeListener(new CompoundButton
-                .OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton,
-                                         boolean value) {
-                if (value)
-                {
-                    // Show Password
-
-                    passwordText.setTransformationMethod(HideReturnsTransformationMethod
-                            .getInstance());
-                }
-                else
-                {
-                    // Hide Password
-                    passwordText.setTransformationMethod(PasswordTransformationMethod
-                            .getInstance());
-                }
-            }
-        });
-
-        loginButton.setOnClickListener(v -> {
-            String email = emailText.getText().toString();
-            String password = passwordText.getText().toString();
-
-            if (TextUtils.isEmpty(email) || !email.contains("@")) {
-                emailText.setError("Requires Email Address");
-
-                Toast.makeText(getApplicationContext(),
-                        "Please Enter valid Email Address",
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (TextUtils.isEmpty(password)) {
-                passwordText.setError("Requires password");
-                Toast.makeText(getApplicationContext(),
-                        "Please Enter valid Password",
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (password.length() < 8) {
-                passwordText.setError("Enter minimum Eight Characters");
-                Toast.makeText(getApplicationContext(),
-                        "Password should contain atleast 8 Characters",
-                        Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(
-                            task -> {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Login Successful!!",
-                                            Toast.LENGTH_LONG)
-                                            .show();
-
-                                    Intent intent
-                                            = new Intent(MainActivity.this,
-                                            NotesActivity.class);
-                                    startActivity(intent);
-                                } else {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Login Failed!",
-                                            Toast.LENGTH_SHORT)
-                                            .show();
-                                    return;
-                                }
-                            });
-        });
-
-        signUpText.setOnClickListener(v-> {
-
-            RegisterFragment registerFragment = new RegisterFragment();
-            FragmentManager registerFragmentManager = getSupportFragmentManager();
-            FragmentTransaction registerFragmentTransaction = registerFragmentManager
-                    .beginTransaction();
-            registerFragmentTransaction.replace(R.id.register_fragment, registerFragment)
-                    .addToBackStack(null).commit();
-
-
-            //register_fragment.setVisibility(v.VISIBLE);
-
-        });
-
+    public void initLoginFragment() {
+        if(getSupportFragmentManager().findFragmentByTag(LOGIN_FRAGMENT_TAG) == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container,
+                            new LoginFragment(), LOGIN_FRAGMENT_TAG).commit();
+        }
     }
 }
