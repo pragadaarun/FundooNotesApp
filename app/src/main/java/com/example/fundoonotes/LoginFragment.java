@@ -1,9 +1,13 @@
 package com.example.fundoonotes;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.fonts.FontFamily;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -22,6 +26,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 
 /**
@@ -32,9 +38,8 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginFragment extends Fragment {
 
     private EditText emailText, passwordText;
-    private TextView signUpText;
-    private Button loginButton;
-    private CheckBox showPassword;
+    public static final String SHARED_PREFS = "sharedPrefs";
+    public static final String Flag = "LoggedIn";
 
     private FirebaseAuth mAuth;
 
@@ -82,7 +87,8 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login, container, false);
+        return inflater.inflate(R.layout.fragment_login,
+                container, false);
 
     }
 
@@ -93,30 +99,9 @@ public class LoginFragment extends Fragment {
 
         emailText = (EditText) getView().findViewById(R.id.emailText);
         passwordText = (EditText) getView().findViewById(R.id.passwordText);
-        loginButton = (Button) getView().findViewById(R.id.loginButton);
-        signUpText = (TextView) getView().findViewById(R.id.signUpText);
-        showPassword = (CheckBox) getView().findViewById(R.id.showPassword);
-
-        showPassword.setOnCheckedChangeListener(new CompoundButton
-                .OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton,
-                                         boolean value) {
-                if (value)
-                {
-                    // Show Password
-
-                    passwordText.setTransformationMethod(HideReturnsTransformationMethod
-                            .getInstance());
-                }
-                else
-                {
-                    // Hide Password
-                    passwordText.setTransformationMethod(PasswordTransformationMethod
-                            .getInstance());
-                }
-            }
-        });
+        Button loginButton = (Button) getView().findViewById(R.id.loginButton);
+        TextView signUpText = (TextView) getView().findViewById(R.id.signUpText);
+        TextView forgotPassword = (TextView) getView().findViewById(R.id.forgotPassword);
 
         loginButton.setOnClickListener(v -> {
             String email = emailText.getText().toString();
@@ -140,7 +125,7 @@ public class LoginFragment extends Fragment {
             if (password.length() < 8) {
                 passwordText.setError("Enter minimum Eight Characters");
                 Toast.makeText(getContext(),
-                        "Password should contain atleast 8 Characters",
+                        "Password should contain at least 8 Characters",
                         Toast.LENGTH_LONG).show();
                 return;
             }
@@ -169,16 +154,41 @@ public class LoginFragment extends Fragment {
         });
 
         signUpText.setOnClickListener(v-> {
-
             ((MainActivity) getActivity()).navigateToRegister();
+        });
 
-//            RegisterFragment registerFragment = new RegisterFragment();
-//            FragmentManager registerFragmentManager = getFragmentManager();
-//            FragmentTransaction registerFragmentTransaction = registerFragmentManager
-//                    .beginTransaction();
-//            registerFragmentTransaction.replace(R.id.register_fragment, registerFragment)
-//                    .addToBackStack(null).commit();
+        forgotPassword.setOnClickListener( v -> {
+            EditText resetMail = new EditText(v.getContext());
+            final AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(v.getContext());
+            passwordResetDialog.setTitle("Reset Password");
+            passwordResetDialog.setMessage("Enter Your Registered Mail");
+            passwordResetDialog.setView(resetMail);
 
+            passwordResetDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    String mail = resetMail.getText().toString();
+                    mAuth.sendPasswordResetEmail(mail).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(getContext(), "Reset Link Sent To Your Email", Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getContext(), "Error! Reset Link Not Sent ", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+
+            passwordResetDialog.setNegativeButton("No", (dialog, which) -> {
+                // close the dialog
+            });
+
+            passwordResetDialog.create().show();
         });
     }
 }
