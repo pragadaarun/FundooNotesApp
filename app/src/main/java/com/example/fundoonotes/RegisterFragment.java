@@ -39,7 +39,8 @@ public class RegisterFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.register_fragment, container, false);
+        return inflater.inflate(R.layout.register_fragment, container,
+                false);
 
     }
 
@@ -61,14 +62,7 @@ public class RegisterFragment extends Fragment {
 
         loginText.setOnClickListener(v -> {
 
-            LoginFragment loginFragment = new LoginFragment();
-            FragmentManager loginFragmentManager = getFragmentManager();
-            FragmentTransaction loginFragmentTransaction = loginFragmentManager
-                    .beginTransaction();
-            loginFragmentTransaction.replace(R.id.register_fragment, loginFragment)
-                    .addToBackStack(null).commit();
-
-
+            getFragmentManager().popBackStackImmediate();
         });
 
 
@@ -90,14 +84,17 @@ public class RegisterFragment extends Fragment {
         } else if (email.isEmpty() && !(password.isEmpty())) {
             fullName.setError("Please Enter Email id");
             fullName.requestFocus();
-        } else if (!email.matches("^[a-zA-Z]+([._+-]{0,1}[a-zA-Z0-9]+)*@[a-zA-Z0-9]+.[a-zA-Z]{2,4}+(?:\\.[a-z]{2,}){0,1}$")) {
+        } else if (!email.matches("^[a-zA-Z]+([._+-]{0,1}[a-zA-Z0-9]+)" +
+                "*@[a-zA-Z0-9]+.[a-zA-Z]{2,4}+(?:\\.[a-z]{2,}){0,1}$")) {
             fullName.setError("Please enter valid email id");
             fullName.requestFocus();
         } else if (password.isEmpty() && !(email.isEmpty())) {
             passwordText.setError("Please Enter Password");
             passwordText.requestFocus();
-        } else if (!password.matches("(^(?=.*[A-Z]))(?=.*[0-9])(?=.*[a-z])(?=.*[@*&^%#-*+!]{1}).{8,}$")) {
-            passwordText.setError("Valid Password should contain at least 8 characters");
+        } else if (!password.matches("(^(?=.*[A-Z]))(?=.*[0-9])" +
+                "(?=.*[a-z])(?=.*[@*&^%#-*+!]{1}).{8,}$")) {
+            passwordText.setError("Valid Password should contain " +
+                    "at least 8 characters");
             passwordText.requestFocus();
         } else if (phone.isEmpty()) {
             phoneText.setError("Please Enter Phone Number");
@@ -120,8 +117,11 @@ public class RegisterFragment extends Fragment {
                             } else {
 
                                 Toast.makeText(getContext(),
-                                        "SignUp Unsuccessful, Please Try Again",
+                                        "Email ID is already Registered," +
+                                                " Please Login",
                                         Toast.LENGTH_SHORT).show();
+                                getFragmentManager().popBackStackImmediate();
+
                             }
                         });
 

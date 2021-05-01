@@ -1,86 +1,52 @@
 package com.example.fundoonotes;
 
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.fonts.FontFamily;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.text.TextUtils;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class LoginFragment extends Fragment {
 
     private EditText emailText, passwordText;
     public static final String SHARED_PREFS = "sharedPrefs";
-    public static final String Flag = "LoggedIn";
-
+    public static final String IS_LOGGED_IN = "LoggedIn";
+    private GoogleSignInClient mGoogleSignInClient;
+    private final String TAG = "LoginFragment";
+    private final int RC_SIGN_IN = 1;
     private FirebaseAuth mAuth;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public LoginFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LoginFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -102,6 +68,15 @@ public class LoginFragment extends Fragment {
         Button loginButton = (Button) getView().findViewById(R.id.loginButton);
         TextView signUpText = (TextView) getView().findViewById(R.id.signUpText);
         TextView forgotPassword = (TextView) getView().findViewById(R.id.forgotPassword);
+        SignInButton googleSignIn = getView().findViewById(R.id.googleSignIN);
+
+        GoogleSignInOptions gsi = new GoogleSignInOptions
+                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gsi);
 
         loginButton.setOnClickListener(v -> {
             String email = emailText.getText().toString();
@@ -138,7 +113,11 @@ public class LoginFragment extends Fragment {
                                             "Login Successful!!",
                                             Toast.LENGTH_LONG)
                                             .show();
-
+                                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+                                    @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putBoolean(IS_LOGGED_IN,true);
+                                    editor.apply();
+                                    getActivity().finish();
                                     Intent intent
                                             = new Intent(getContext(),
                                             NotesActivity.class);
@@ -148,7 +127,6 @@ public class LoginFragment extends Fragment {
                                             "Login Failed!",
                                             Toast.LENGTH_SHORT)
                                             .show();
-                                    return;
                                 }
                             });
         });
@@ -159,36 +137,99 @@ public class LoginFragment extends Fragment {
 
         forgotPassword.setOnClickListener( v -> {
             EditText resetMail = new EditText(v.getContext());
-            final AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(v.getContext());
+            final AlertDialog.Builder passwordResetDialog = new AlertDialog
+                    .Builder(v.getContext());
             passwordResetDialog.setTitle("Reset Password");
             passwordResetDialog.setMessage("Enter Your Registered Mail");
             passwordResetDialog.setView(resetMail);
 
-            passwordResetDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+            passwordResetDialog.setPositiveButton("Reset",
+                    (dialog, which) -> {
 
-                    String mail = resetMail.getText().toString();
-                    mAuth.sendPasswordResetEmail(mail).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        String mail = resetMail.getText().toString();
+                        mAuth.sendPasswordResetEmail(mail)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
 
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(getContext(), "Reset Link Sent To Your Email", Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getContext(), "Error! Reset Link Not Sent ", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            });
-
-            passwordResetDialog.setNegativeButton("No", (dialog, which) -> {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(getContext(),
+                                                "Reset Link Sent To Your Email",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getContext(),
+                                        "Error! Reset Link Not Sent ",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }).setNegativeButton("Cancel", (dialog, which) -> {
                 // close the dialog
             });
 
             passwordResetDialog.create().show();
         });
+
+        googleSignIn.setOnClickListener(v -> {
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+
+        });
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn
+                    .getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                assert account != null;
+                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId() );
+                firebaseAuthWithGoogle(account.getIdToken());
+            } catch (ApiException e) {
+                Log.w(TAG, "Google sign in failed", e);
+            }
+        }
+    }
+
+    private void firebaseAuthWithGoogle(String idToken) {
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener( task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithCredential:success");
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        Intent intent = new Intent(getContext(), NotesActivity.class);
+                        startActivity(intent);
+                        getActivity().finish();
+                        updateUI(user);
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithCredential:failure", task.getException());
+                        updateUI(null);
+                    }
+                });
+    }
+
+    private void updateUI(FirebaseUser user) {
+
+        GoogleSignInAccount account = GoogleSignIn
+                .getLastSignedInAccount(getContext());
+        if(account !=  null){
+            String personName = account.getDisplayName();
+            String personEmail = account.getEmail();
+
+            Toast.makeText(getContext(), "Signed in using " + personEmail,
+                    Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
 }
