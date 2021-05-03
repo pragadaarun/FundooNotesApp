@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
                 addToBackStack(null).commit();
     }
 
-
     public void initLoginFragment() {
         if(getSupportFragmentManager().findFragmentByTag(LOGIN_FRAGMENT_TAG) == null) {
             getSupportFragmentManager().beginTransaction()

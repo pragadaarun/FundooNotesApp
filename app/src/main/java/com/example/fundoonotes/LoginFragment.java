@@ -32,13 +32,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginFragment extends Fragment {
 
     private EditText emailText, passwordText;
-    public static final String SHARED_PREFS = "sharedPrefs";
+    public static final String SHARED_PREFERENCES = "sharedPreferences";
     public static final String IS_LOGGED_IN = "LoggedIn";
     private GoogleSignInClient mGoogleSignInClient;
     private final String TAG = "LoginFragment";
@@ -113,7 +116,7 @@ public class LoginFragment extends Fragment {
                                             "Login Successful!!",
                                             Toast.LENGTH_LONG)
                                             .show();
-                                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+                                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
                                     @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = sharedPreferences.edit();
                                     editor.putBoolean(IS_LOGGED_IN,true);
                                     editor.apply();
@@ -123,10 +126,20 @@ public class LoginFragment extends Fragment {
                                             NotesActivity.class);
                                     startActivity(intent);
                                 } else {
-                                    Toast.makeText(getContext(),
-                                            "Login Failed!",
-                                            Toast.LENGTH_SHORT)
-                                            .show();
+                                    try {
+                                        throw task.getException();
+                                    } catch (FirebaseAuthInvalidCredentialsException e) {
+                                        passwordText.setError("Password is Wrong");
+                                        passwordText.requestFocus();
+                                    } catch (FirebaseAuthUserCollisionException e) {
+                                        emailText.setError("Email Address is already Active in Another Device");
+                                        emailText.requestFocus();}
+                                    catch (FirebaseAuthInvalidUserException e) {
+                                        emailText.setError("Email Address is Not Registered");
+                                        emailText.requestFocus();
+                                    } catch (Exception e) {
+                                        Log.e(TAG, e.getMessage());
+                                    }
                                 }
                             });
         });

@@ -9,7 +9,7 @@ import android.os.Handler;
 import android.view.WindowManager;
 
 import static com.example.fundoonotes.LoginFragment.IS_LOGGED_IN;
-import static com.example.fundoonotes.LoginFragment.SHARED_PREFS;
+import static com.example.fundoonotes.LoginFragment.SHARED_PREFERENCES;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -24,7 +24,7 @@ public class SplashActivity extends AppCompatActivity {
                 .FLAG_FULLSCREEN);
 
         new Handler().postDelayed(() -> {
-            SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE);
             isLoggedIn = sharedPreferences.getBoolean(IS_LOGGED_IN, false);
             Intent intent;
             if(isLoggedIn){
