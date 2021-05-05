@@ -7,7 +7,7 @@
             android:icon="@drawable/ic_baseline_note_add_24"
             android:title="@string/notes"/>
 
-        <item android:id="@+id/remainder"
+        <item android:id="@+id/reminder"
             android:icon="@drawable/ic_baseline_rate_review_24"
             android:title="@string/reminder"/>
 
@@ -19,7 +19,7 @@
             android:icon="@drawable/ic_baseline_delete_24"
             android:title="@string/trash"/>
 
-        <item android:id="@+id/logout"
+        <item android:id="@+id/logOut"
             android:icon="@drawable/ic_baseline_exit_to_app_24"
             android:title="@string/logout"/>
     </group>

@@ -18,4 +18,13 @@
     <string name="or">-------------or-------------</string>
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
+    <string name="type_here">Type Here</string>
+    <string name="save_note">Save</string>
+    <string name="create_note">Create Note</string>
+    <string name="title">Title</string>
+    <string name="enter_title">Enter Title</string>
+    <string name="description">Description</string>
+    <string name="enter_description_here">Enter Description Here</string>
+    <string name="user_name">User</string>
+    <string name="user_email">Email</string>
 </resources>

@@ -12,7 +12,7 @@
     android:paddingRight="10dp"
     android:paddingStart="10dp"
     android:paddingTop="10dp"
-    tools:context=".RegisterFragment"
+    tools:context=".UI.Fragments.RegisterFragment"
     tools:visibility="visible">
 
     <Button

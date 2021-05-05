@@ -5,7 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.fundoonotes.NotesActivity"
+    tools:context="com.example.fundoonotes.DashBoard.Activity.HomeActivity"
     tools:openDrawer="start">
 
     <LinearLayout
@@ -23,7 +23,7 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <FrameLayout
-            android:id="@+id/fragment_container"
+            android:id="@+id/home_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -36,5 +36,21 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/navigation_header"
         app:menu="@menu/drawer_menu" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_note"
+            android:layout_width="wrap_content"
+            android:layout_height="72dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="60dp"
+            android:layout_marginEnd="10dp"
+            android:background="@color/white"
+            android:backgroundTint="#AAA9A9"
+            android:contentDescription="@string/create_note"
+            android:src="@drawable/ic_baseline_add_circle_outline_24" />
+    </FrameLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>
