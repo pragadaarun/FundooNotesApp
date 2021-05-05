@@ -1,8 +1,4 @@
-package com.example.fundoonotes;
-
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
+package com.example.fundoonotes.UI.Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +15,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.fundoonotes.DashBoard.Activity.HomeActivity;
+import com.example.fundoonotes.R;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class RegisterFragment extends Fragment {
@@ -27,8 +25,6 @@ public class RegisterFragment extends Fragment {
     private Button registerButton;
     private TextView loginText;
     FirebaseAuth mFirebaseAuth;
-
-    private RegisterViewModel mViewModel;
 
     public static RegisterFragment newInstance() {
         return new RegisterFragment();
@@ -39,7 +35,7 @@ public class RegisterFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.register_fragment, container,
+        return inflater.inflate(R.layout.fragment_register, container,
                 false);
 
     }
@@ -47,7 +43,6 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
 
@@ -112,7 +107,7 @@ public class RegisterFragment extends Fragment {
                             if (task.isSuccessful()) {
                                 Intent intent
                                         = new Intent(getContext(),
-                                        NotesActivity.class);
+                                        HomeActivity.class);
                                 startActivity(intent);
                             } else {
 

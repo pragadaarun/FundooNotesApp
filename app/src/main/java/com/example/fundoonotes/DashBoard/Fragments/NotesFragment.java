@@ -1,16 +1,20 @@
-package com.example.fundoonotes;
+package com.example.fundoonotes.DashBoard.Fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class TrashFragment extends Fragment {
+import com.example.fundoonotes.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-    public TrashFragment() {
+public class NotesFragment extends Fragment {
+
+    public NotesFragment() {
         // Required empty public constructor
     }
 
@@ -24,6 +28,13 @@ public class TrashFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_trash, container, false);
+        return inflater.inflate(R.layout.fragment_notes, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+
     }
 }
