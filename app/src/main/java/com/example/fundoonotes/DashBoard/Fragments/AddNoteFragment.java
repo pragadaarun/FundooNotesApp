@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.fundoonotes.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -39,8 +40,8 @@ public class AddNoteFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         Button saveNoteButton = (Button) Objects.requireNonNull(getView()).findViewById(R.id.saveNoteButton);
-        fAddDescriptionOfNote = (EditText) getView().findViewById(R.id.editTextTitle);
-        fAddTitleOfNote = (EditText) getView().findViewById(R.id.editTextDescription);
+        fAddTitleOfNote = (EditText) getView().findViewById(R.id.editTextTitle);
+        fAddDescriptionOfNote = (EditText) getView().findViewById(R.id.editTextDescription);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -53,7 +54,7 @@ public class AddNoteFragment extends Fragment {
         String description = fAddDescriptionOfNote.getText().toString();
         if (!title.isEmpty() || !description.isEmpty()) {
             DocumentReference documentReference = firebaseFirestore
-                    .collection(firebaseUser.getDisplayName())
+                    .collection("users")
                     .document(firebaseUser.getUid())
                     .collection("notes").document();
             Map<String, Object> note = new HashMap<>();
@@ -70,4 +71,5 @@ public class AddNoteFragment extends Fragment {
                     Toast.LENGTH_SHORT).show();
         }
     }
+
 }

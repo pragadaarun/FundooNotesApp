@@ -2,11 +2,12 @@ package com.example.fundoonotes.UI.Activity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 public class SharedPreferenceHelper {
     private Context context;
     public static final String SHARED_PREFERENCES = "sharedPreferences";
-    public static final String IS_LOGGED_IN = "loggedIn";
+    public static final String IS_LOGGED_IN = "isLoggedIn";
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
@@ -22,6 +23,7 @@ public class SharedPreferenceHelper {
     }
 
     public boolean getLoggedIN(){
+        Log.d("Shared Preference","IS_LOGGED_IN value" + IS_LOGGED_IN);
         return sharedPreferences.getBoolean(IS_LOGGED_IN,false);
     }
 

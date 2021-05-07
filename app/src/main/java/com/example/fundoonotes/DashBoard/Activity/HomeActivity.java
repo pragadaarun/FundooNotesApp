@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.fundoonotes.DashBoard.Fragments.AddNoteFragment;
 import com.example.fundoonotes.DashBoard.Fragments.ArchiveFragment;
@@ -28,6 +29,8 @@ public class HomeActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     private DrawerLayout drawer;
     SharedPreferenceHelper sharedPreferenceHelper;
+    FloatingActionButton addNote;
+    FragmentTransaction fragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +41,12 @@ public class HomeActivity extends AppCompatActivity {
         drawer = findViewById(R.id.drawer_layout);
         firebaseAuth = FirebaseAuth.getInstance();
         sharedPreferenceHelper = new SharedPreferenceHelper(this);
-
-        FloatingActionButton addNote = findViewById(R.id.add_note);
+        addNote = findViewById(R.id.add_note);
 
         addNote.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.home_fragment_container, new AddNoteFragment())
+            fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+            fragmentTransaction.replace(R.id.home_fragment_container, new AddNoteFragment())
                     .addToBackStack(null).commit();
             addNote.hide();
         });
@@ -93,8 +96,13 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+//        } else if (getSupportFragmentManager().getBackStackEntryCount() == 0 ){
+//            addNote.show();
+//            getSupportFragmentManager().popBackStack();
+//            fragmentTransaction.commit();
         }
         else {
             super.onBackPressed();

@@ -39,6 +39,8 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginFragment extends Fragment {
 
@@ -50,6 +52,7 @@ public class LoginFragment extends Fragment {
     private final int RC_SIGN_IN = 1;
     private FirebaseAuth mAuth;
     SharedPreferenceHelper sharedPreferenceHelper;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -69,7 +72,7 @@ public class LoginFragment extends Fragment {
         TextView signUpText = (TextView) getView().findViewById(R.id.signUpText);
         TextView forgotPassword = (TextView) getView().findViewById(R.id.forgotPassword);
         SignInButton googleSignIn = getView().findViewById(R.id.googleSignIN);
-
+        sharedPreferenceHelper = new SharedPreferenceHelper(getContext());
         GoogleSignInOptions gsi = new GoogleSignInOptions
                 .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -229,7 +232,7 @@ public class LoginFragment extends Fragment {
         if (task.isSuccessful()) {
             // Sign in success, update UI with the signed-in user's information
             Log.d(TAG, "signInWithCredential:success");
-//            sharedPreferenceHelper.setIsLoggedIn(true);
+            sharedPreferenceHelper.setIsLoggedIn(true);
             FirebaseUser user = mAuth.getCurrentUser();
             Intent intent = new Intent(getContext(), HomeActivity.class);
             startActivity(intent);

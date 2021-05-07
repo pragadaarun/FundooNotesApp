@@ -5,12 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.WindowManager;
 import com.example.fundoonotes.DashBoard.Activity.HomeActivity;
 import com.example.fundoonotes.R;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private static final String SPLASH_TAG = "SplashActivity";
     private boolean isLoggedIn;
 
     @Override
@@ -24,6 +26,7 @@ public class SplashActivity extends AppCompatActivity {
 
         new Handler().postDelayed(() -> {
             isLoggedIn = sharedPreferenceHelper.getLoggedIN();
+            Log.d(SPLASH_TAG, "isLoggedIn Value" + isLoggedIn);
             Intent intent;
             if(isLoggedIn){
                 intent = new Intent(SplashActivity.this, HomeActivity.class);
