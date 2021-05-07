@@ -8,6 +8,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
@@ -23,13 +24,22 @@ import com.example.fundoonotes.UI.Activity.SharedPreferenceHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Source;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
 
+    public static FloatingActionButton addNote;
     FirebaseAuth firebaseAuth;
     private DrawerLayout drawer;
     SharedPreferenceHelper sharedPreferenceHelper;
-    FloatingActionButton addNote;
     FragmentTransaction fragmentTransaction;
 
     @Override
@@ -48,7 +58,6 @@ public class HomeActivity extends AppCompatActivity {
 
             fragmentTransaction.replace(R.id.home_fragment_container, new AddNoteFragment())
                     .addToBackStack(null).commit();
-            addNote.hide();
         });
         NavigationView navigationView = findViewById(R.id.navigation_header_container);
         navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
@@ -99,10 +108,6 @@ public class HomeActivity extends AppCompatActivity {
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-//        } else if (getSupportFragmentManager().getBackStackEntryCount() == 0 ){
-//            addNote.show();
-//            getSupportFragmentManager().popBackStack();
-//            fragmentTransaction.commit();
         }
         else {
             super.onBackPressed();
