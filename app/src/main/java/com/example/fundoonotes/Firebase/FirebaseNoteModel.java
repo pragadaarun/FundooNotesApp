@@ -1,17 +1,17 @@
 package com.example.fundoonotes.Firebase;
 
-public class FirebaseModel {
+public class FirebaseNoteModel {
 
     private String title;
     private String content;
 
 
-    public FirebaseModel()
+    public FirebaseNoteModel()
     {
 
     }
 
-    public  FirebaseModel (String title, String content)
+    public FirebaseNoteModel(String title, String content)
     {
         this.title=title;
         this.content=content;

@@ -8,14 +8,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.fundoonotes.Firebase.CallBack;
+import com.example.fundoonotes.Firebase.FirebaseNoteManager;
 import com.example.fundoonotes.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import androidx.annotation.Nullable;
@@ -26,9 +24,6 @@ import static com.example.fundoonotes.DashBoard.Activity.HomeActivity.addNote;
 
 public class AddNoteFragment extends Fragment {
     private EditText fAddTitleOfNote, fAddDescriptionOfNote;
-    FirebaseAuth firebaseAuth;
-    FirebaseUser firebaseUser;
-    FirebaseFirestore firebaseFirestore;
 
     @Override
     public View onCreateView(LayoutInflater inflater,  ViewGroup container,
@@ -43,9 +38,6 @@ public class AddNoteFragment extends Fragment {
         Button saveNoteButton = (Button) Objects.requireNonNull(getView()).findViewById(R.id.saveNoteButton);
         fAddTitleOfNote = (EditText) getView().findViewById(R.id.editTextTitle);
         fAddDescriptionOfNote = (EditText) getView().findViewById(R.id.editTextDescription);
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         saveNoteButton.setOnClickListener(this::saveToFirebase);
     }
@@ -54,24 +46,22 @@ public class AddNoteFragment extends Fragment {
         String title = fAddTitleOfNote.getText().toString();
         String description = fAddDescriptionOfNote.getText().toString();
         if (!title.isEmpty() || !description.isEmpty()) {
-            DocumentReference documentReference = firebaseFirestore
-                    .collection("users")
-                    .document(firebaseUser.getUid())
-                    .collection("notes").document();
-            Map<String, Object> note = new HashMap<>();
-            note.put("title", title);
-            note.put("description", description);
+            FirebaseNoteManager firebaseNoteManager = new FirebaseNoteManager();
+            firebaseNoteManager.addNote(title, description, new CallBack<Boolean>() {
+                @Override
+                public void onSuccess(Boolean data) {
+                    Toast.makeText(getContext(),
+                            "Note Created Successfully",
+                            Toast.LENGTH_SHORT).show();
+                    getFragmentManager().popBackStackImmediate();
+                }
 
-            documentReference.set(note)
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(getContext(),
-                                "Note Created Successfully",
-                                Toast.LENGTH_SHORT).show();
-                        getFragmentManager().popBackStackImmediate();
-
-                    })
-                    .addOnFailureListener(e -> Toast.makeText(getContext(),
-                            "Failed To Create Note", Toast.LENGTH_SHORT).show());
+                @Override
+                public void onFailure(Exception exception) {
+                    Toast.makeText(getContext(),
+                            "Failed To Create Note", Toast.LENGTH_SHORT).show();
+                }
+            });
         } else {
             Toast.makeText(getContext(), "Both fields are Required",
                     Toast.LENGTH_SHORT).show();
