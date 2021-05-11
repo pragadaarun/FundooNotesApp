@@ -27,4 +27,7 @@
     <string name="enter_description_here">Enter Description Here</string>
     <string name="user_name">User</string>
     <string name="user_email">Email</string>
+    <string name="forgot_password"><u>Forgot Password ?</u></string>
+    <string name="note_title_display">Note Title</string>
+    <string name="note_content_display">Note Content</string>
 </resources>

@@ -7,6 +7,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -21,9 +22,12 @@ import com.example.fundoonotes.R;
 import com.example.fundoonotes.DashBoard.Fragments.ReminderFragment;
 import com.example.fundoonotes.UI.Activity.LoginRegisterActivity;
 import com.example.fundoonotes.UI.Activity.SharedPreferenceHelper;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -40,7 +44,8 @@ public class HomeActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     private DrawerLayout drawer;
     SharedPreferenceHelper sharedPreferenceHelper;
-    FragmentTransaction fragmentTransaction;
+    FirebaseUser firebaseUser;
+    FirebaseFirestore firebaseFirestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +57,15 @@ public class HomeActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         sharedPreferenceHelper = new SharedPreferenceHelper(this);
         addNote = findViewById(R.id.add_note);
+        firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
+        firebaseFirestore=FirebaseFirestore.getInstance();
 
         addNote.setOnClickListener(v -> {
-            fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
-            fragmentTransaction.replace(R.id.home_fragment_container, new AddNoteFragment())
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.home_fragment_container, new AddNoteFragment())
                     .addToBackStack(null).commit();
         });
+
         NavigationView navigationView = findViewById(R.id.navigation_header_container);
         navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,

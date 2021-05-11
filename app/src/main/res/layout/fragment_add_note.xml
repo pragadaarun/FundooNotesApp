@@ -45,21 +45,21 @@
                 style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="14dp"
                 android:padding="10dp"
                 android:text="@string/description"
                 android:textSize="20dp"
-                android:textStyle="bold"
-                android:layout_margin="14dp"/>
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/editTextDescription"
-                android:layout_width="match_parent"
+                android:layout_width="367dp"
                 android:layout_height="wrap_content"
+                android:layout_margin="4dp"
                 android:hint="@string/enter_description_here"
                 android:paddingTop="20dp"
                 android:textColor="@color/black"
-                android:textSize="18dp"
-                android:layout_margin="4dp"/>
+                android:textSize="18dp" />
 
             <Button
                 android:id="@+id/saveNoteButton"

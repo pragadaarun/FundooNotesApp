@@ -39,19 +39,21 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginFragment extends Fragment {
 
     private EditText emailText, passwordText;
-    public static final String SHARED_PREFERENCES = "sharedPreferences";
-    public static final String IS_LOGGED_IN = "LoggedIn";
     private GoogleSignInClient mGoogleSignInClient;
     private final String TAG = "LoginFragment";
     private final int RC_SIGN_IN = 1;
     private FirebaseAuth mAuth;
     SharedPreferenceHelper sharedPreferenceHelper;
+    private FirebaseUser firebaseUser;
+    private FirebaseFirestore firebaseFirestore;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,7 +67,8 @@ public class LoginFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mAuth = FirebaseAuth.getInstance();
-
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        firebaseFirestore = FirebaseFirestore.getInstance();
         emailText = (EditText) getView().findViewById(R.id.emailText);
         passwordText = (EditText) getView().findViewById(R.id.passwordText);
         Button loginButton = (Button) getView().findViewById(R.id.loginButton);
@@ -230,6 +233,15 @@ public class LoginFragment extends Fragment {
 
     private void googleSignInAction(Task<AuthResult> task) {
         if (task.isSuccessful()) {
+            if (task.getResult().getAdditionalUserInfo().isNewUser()){
+                String userName = firebaseUser.getDisplayName();
+                String email = firebaseUser.getEmail();
+                Map<String, Object> user = new HashMap<>();
+                user.put("UserName", userName);
+                user.put("Email", email);
+                firebaseFirestore.collection("users")
+                        .document(firebaseUser.getUid()).set(user);
+            }
             // Sign in success, update UI with the signed-in user's information
             Log.d(TAG, "signInWithCredential:success");
             sharedPreferenceHelper.setIsLoggedIn(true);
