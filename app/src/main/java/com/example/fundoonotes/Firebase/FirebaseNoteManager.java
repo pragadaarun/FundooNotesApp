@@ -38,10 +38,10 @@ public class FirebaseNoteManager {
 
                             String title = queryDocumentSnapshots.getDocuments()
                                     .get(index).getString("title");
-                            String content = queryDocumentSnapshots.getDocuments()
+                            String description = queryDocumentSnapshots.getDocuments()
                                     .get(index).getString("description");
 
-                            FirebaseNoteModel note = new FirebaseNoteModel(title, content);
+                            FirebaseNoteModel note = new FirebaseNoteModel(title, description);
                             notesList.add(note);
                         }
                         listener.onSuccess(notesList);

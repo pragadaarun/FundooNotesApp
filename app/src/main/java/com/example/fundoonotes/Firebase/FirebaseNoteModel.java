@@ -3,7 +3,7 @@ package com.example.fundoonotes.Firebase;
 public class FirebaseNoteModel {
 
     private String title;
-    private String content;
+    private String description;
 
 
     public FirebaseNoteModel()
@@ -11,10 +11,10 @@ public class FirebaseNoteModel {
 
     }
 
-    public FirebaseNoteModel(String title, String content)
+    public FirebaseNoteModel(String title, String description)
     {
-        this.title=title;
-        this.content=content;
+        this.title = title;
+        this.description = description;
     }
 
 
@@ -26,11 +26,11 @@ public class FirebaseNoteModel {
         this.title = title;
     }
 
-    public String getContent() {
-        return content;
+    public String getDescription() {
+        return description;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

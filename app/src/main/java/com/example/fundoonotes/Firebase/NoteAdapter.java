@@ -31,7 +31,7 @@ public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> {
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         FirebaseNoteModel note = notesList.get(position);
         holder.noteTitle.setText(note.getTitle());
-        holder.noteContent.setText(note.getContent());
+        holder.noteDescription.setText(note.getDescription());
     }
 
     @Override
