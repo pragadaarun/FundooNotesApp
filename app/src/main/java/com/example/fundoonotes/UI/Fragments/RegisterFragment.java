@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,14 +16,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fundoonotes.DashBoard.Activity.HomeActivity;
+import com.example.fundoonotes.Firebase.Model.FirebaseUserModel;
 import com.example.fundoonotes.R;
 import com.example.fundoonotes.UI.Activity.SharedPreferenceHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RegisterFragment extends Fragment {
 
@@ -116,12 +113,11 @@ public class RegisterFragment extends Fragment {
                         task -> {
                             if (task.isSuccessful()) {
                                 String userID = mFirebaseAuth.getCurrentUser().getUid();
-                                DocumentReference documentReference = fStore.collection("users").document(userID);
-                                Map<String, Object> user = new HashMap<>();
-                                user.put("email", email);
-                                user.put("name", name);
-                                user.put("phone", phone);
-                                documentReference.set(user)
+                                DocumentReference documentReference = fStore
+                                        .collection("users").document(userID);
+                                FirebaseUserModel model = new FirebaseUserModel(name, email);
+                                model.setPhone(phone);
+                                documentReference.set(model.asMap())
                                         .addOnSuccessListener(aVoid -> Toast.makeText(getContext(),
                                                 "User Created", Toast.LENGTH_SHORT).show())
                                         .addOnFailureListener(e -> Toast.makeText(getContext(),

@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.fundoonotes.Firebase.Model.FirebaseUserModel;
 import com.example.fundoonotes.UI.Activity.LoginRegisterActivity;
 import com.example.fundoonotes.DashBoard.Activity.HomeActivity;
 import com.example.fundoonotes.R;
@@ -41,14 +42,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class LoginFragment extends Fragment {
 
     private EditText emailText, passwordText;
     private GoogleSignInClient mGoogleSignInClient;
-    private final String TAG = "LoginFragment";
+    private static final String TAG = "LoginFragment";
     private final int RC_SIGN_IN = 1;
     private FirebaseAuth mAuth;
     SharedPreferenceHelper sharedPreferenceHelper;
@@ -83,19 +81,15 @@ public class LoginFragment extends Fragment {
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gsi);
-
         loginButton.setOnClickListener(this::logInAction);
-
-        signUpText.setOnClickListener(v-> {
+        signUpText.setOnClickListener(v -> {
             ((LoginRegisterActivity) getActivity()).navigateToRegister();
         });
 
         forgotPassword.setOnClickListener(this::resetPassword);
-
         googleSignIn.setOnClickListener(v -> {
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
-
         });
     }
 
@@ -110,7 +104,7 @@ public class LoginFragment extends Fragment {
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 assert account != null;
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId() );
+                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
                 Log.w(TAG, "Google sign in failed", e);
@@ -119,23 +113,9 @@ public class LoginFragment extends Fragment {
     }
 
     private void firebaseAuthWithGoogle(String idToken) {
-
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this::googleSignInAction);
-    }
-
-    private void updateUI(FirebaseUser user) {
-
-        GoogleSignInAccount account = GoogleSignIn
-                .getLastSignedInAccount(getContext());
-        if(account !=  null){
-            String personEmail = account.getEmail();
-
-            Toast.makeText(getContext(), "Signed in using " + personEmail,
-                    Toast.LENGTH_SHORT).show();
-        }
-
     }
 
     private void resetPassword(View v) {
@@ -148,11 +128,9 @@ public class LoginFragment extends Fragment {
 
         passwordResetDialog.setPositiveButton("Reset",
                 (dialog, which) -> {
-
                     String mail = resetMail.getText().toString();
                     mAuth.sendPasswordResetEmail(mail)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
-
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Toast.makeText(getContext(),
@@ -160,17 +138,16 @@ public class LoginFragment extends Fragment {
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getContext(),
-                                    "Error! Reset Link Not Sent ",
-                                    Toast.LENGTH_SHORT).show();
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(getContext(),
+                                         "Error! Reset Link Not Sent ",
+                                            Toast.LENGTH_SHORT).show();
                         }
                     });
                 }).setNegativeButton("Cancel", (dialog, which) -> {
             // close the dialog
         });
-
         passwordResetDialog.create().show();
     }
 
@@ -180,67 +157,60 @@ public class LoginFragment extends Fragment {
 
         if (TextUtils.isEmpty(email) || !email.contains("@")) {
             emailText.setError("Requires Email Address");
-
-            Toast.makeText(getContext(),
-                    "Please Enter valid Email Address",
+            Toast.makeText(getContext(), "Please Enter valid Email Address",
                     Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(password)) {
+        }else if (TextUtils.isEmpty(password)) {
             passwordText.setError("Requires password");
-            Toast.makeText(getContext(),
-                    "Please Enter valid Password",
+            Toast.makeText(getContext(), "Please Enter valid Password",
                     Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (password.length() < 8) {
+        }else if (password.length() < 8) {
             passwordText.setError("Enter minimum Eight Characters");
-            Toast.makeText(getContext(),
-                    "Password should contain at least 8 Characters",
+            Toast.makeText(getContext(), "Password should contain at least 8 Characters",
                     Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(
-                        task -> {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(getContext(), "Login Successful!!",
-                                        Toast.LENGTH_LONG).show();
-                                sharedPreferenceHelper.setIsLoggedIn(true);
-                                getActivity().finish();
-                                Intent intent
-                                        = new Intent(getContext(),
-                                        HomeActivity.class);
-                                startActivity(intent);
-                            } else {
-                                try {
-                                    throw task.getException();
-                                } catch (FirebaseAuthInvalidCredentialsException e) {
-                                    passwordText.setError("Password is Wrong");
-                                    passwordText.requestFocus();
-                                } catch (FirebaseAuthUserCollisionException e) {
-                                    emailText.setError("Email Address is already Active in Another Device");
-                                    emailText.requestFocus();
-                                } catch (FirebaseAuthInvalidUserException e) {
-                                    emailText.setError("Email Address is Not Registered");
-                                    emailText.requestFocus();
-                                } catch (Exception e) {
-                                    Log.e(TAG, e.getMessage());
-                                }
+        } else {
+            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(
+                    task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getContext(), "Login Successful!!",
+                                    Toast.LENGTH_LONG).show();
+                            sharedPreferenceHelper.setIsLoggedIn(true);
+                            getActivity().finish();
+                            Intent intent = new Intent(getContext(),
+                                    HomeActivity.class);
+                            startActivity(intent);
+                        } else {
+                            try {
+                                throw task.getException();
+                            } catch (FirebaseAuthInvalidCredentialsException e) {
+                                passwordText.setError("Password is Wrong");
+                                passwordText.requestFocus();
+                            } catch (FirebaseAuthUserCollisionException e) {
+                                emailText.setError("Email Address is already Active in Another Device");
+                                emailText.requestFocus();
+                            } catch (FirebaseAuthInvalidUserException e) {
+                                emailText.setError("Email Address is Not Registered");
+                                emailText.requestFocus();
+                            } catch (Exception e) {
+                                Log.e(TAG, e.getMessage());
                             }
-                        });
+                        }
+                    });
+        }
     }
 
     private void googleSignInAction(Task<AuthResult> task) {
         if (task.isSuccessful()) {
-            if (task.getResult().getAdditionalUserInfo().isNewUser()){
+            GoogleSignInAccount account = GoogleSignIn
+                    .getLastSignedInAccount(getContext());
+            if (account != null) {
+                firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                 String userName = firebaseUser.getDisplayName();
                 String email = firebaseUser.getEmail();
-                Map<String, Object> user = new HashMap<>();
-                user.put("UserName", userName);
-                user.put("Email", email);
+                FirebaseUserModel model = new FirebaseUserModel(userName, email);
+                Log.e(TAG, "googleSignInAction: " + userName + " " + email);
                 firebaseFirestore.collection("users")
-                        .document(firebaseUser.getUid()).set(user);
+                        .document(firebaseUser.getUid()).set(model.asMap());
+                Toast.makeText(getContext(), "Signed in using" + email, Toast.LENGTH_SHORT).show();
             }
             // Sign in success, update UI with the signed-in user's information
             Log.d(TAG, "signInWithCredential:success");
@@ -249,11 +219,9 @@ public class LoginFragment extends Fragment {
             Intent intent = new Intent(getContext(), HomeActivity.class);
             startActivity(intent);
             getActivity().finish();
-            updateUI(user);
         } else {
             // If sign in fails, display a message to the user.
             Log.w(TAG, "signInWithCredential:failure", task.getException());
-            updateUI(null);
         }
     }
 }

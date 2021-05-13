@@ -2,6 +2,8 @@ package com.example.fundoonotes.Firebase;
 
 import android.util.Log;
 
+import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
+import com.example.fundoonotes.HelperClasses.CallBack;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;

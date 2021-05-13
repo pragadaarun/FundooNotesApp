@@ -1,12 +1,12 @@
-package com.example.fundoonotes.UI.Activity;
+package com.example.fundoonotes.Authentication.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
 import com.example.fundoonotes.R;
-import com.example.fundoonotes.UI.Fragments.RegisterFragment;
-import com.example.fundoonotes.UI.Fragments.LoginFragment;
+import com.example.fundoonotes.Authentication.Fragments.RegisterFragment;
+import com.example.fundoonotes.Authentication.Fragments.LoginFragment;
 
 public class LoginRegisterActivity extends AppCompatActivity {
 

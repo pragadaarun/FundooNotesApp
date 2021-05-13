@@ -8,12 +8,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.fundoonotes.Firebase.CallBack;
+import com.example.fundoonotes.HelperClasses.CallBack;
 import com.example.fundoonotes.Firebase.FirebaseNoteManager;
 import com.example.fundoonotes.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.Objects;
 
 import androidx.annotation.Nullable;

@@ -1,4 +1,4 @@
-package com.example.fundoonotes.UI.Activity;
+package com.example.fundoonotes.Authentication.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
