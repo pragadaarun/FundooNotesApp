@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
@@ -18,6 +20,11 @@ import com.example.fundoonotes.DashBoard.Fragments.AddNoteFragment;
 import com.example.fundoonotes.DashBoard.Fragments.ArchiveFragment;
 import com.example.fundoonotes.DashBoard.Fragments.NotesFragment;
 import com.example.fundoonotes.DashBoard.Fragments.TrashFragment;
+import com.example.fundoonotes.Firebase.CallBack;
+import com.example.fundoonotes.Firebase.FirebaseNoteModel;
+import com.example.fundoonotes.Firebase.FirebaseUserManager;
+import com.example.fundoonotes.Firebase.FirebaseUserModel;
+import com.example.fundoonotes.Firebase.NoteAdapter;
 import com.example.fundoonotes.R;
 import com.example.fundoonotes.DashBoard.Fragments.ReminderFragment;
 import com.example.fundoonotes.UI.Activity.LoginRegisterActivity;
@@ -34,6 +41,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Source;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,8 +52,7 @@ public class HomeActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     private DrawerLayout drawer;
     SharedPreferenceHelper sharedPreferenceHelper;
-    FirebaseUser firebaseUser;
-    FirebaseFirestore firebaseFirestore;
+    private final FirebaseUserManager firebaseUserManager = new FirebaseUserManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +64,6 @@ public class HomeActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         sharedPreferenceHelper = new SharedPreferenceHelper(this);
         addNote = findViewById(R.id.add_note);
-        firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
-        firebaseFirestore=FirebaseFirestore.getInstance();
 
         addNote.setOnClickListener(v -> {
             getSupportFragmentManager().beginTransaction()
@@ -81,7 +86,25 @@ public class HomeActivity extends AppCompatActivity {
                     new NotesFragment()).commit();
             navigationView.setCheckedItem(R.id.note);
         }
+        View headerView = navigationView.getHeaderView(0);
+        TextView userName = headerView.findViewById(R.id.user_name_display);
+        TextView userEmail = headerView.findViewById(R.id.user_email_display);
+        firebaseUserManager.getUserDetails(new CallBack<FirebaseUserModel>() {
+            @Override
+            public void onSuccess(FirebaseUserModel data) {
+                userName.setText(data.getUserName());
+                userEmail.setText(data.getUserEmail());
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+                Toast.makeText(HomeActivity.this,
+                        "Something went Wrong",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.note) {
