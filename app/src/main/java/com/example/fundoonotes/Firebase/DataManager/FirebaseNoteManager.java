@@ -1,4 +1,4 @@
-package com.example.fundoonotes.Firebase;
+package com.example.fundoonotes.Firebase.DataManager;
 
 import android.util.Log;
 

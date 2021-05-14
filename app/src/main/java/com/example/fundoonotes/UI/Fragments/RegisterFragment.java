@@ -63,11 +63,8 @@ public class RegisterFragment extends Fragment {
         registerButton.setOnClickListener(this::registerUser);
 
         loginText.setOnClickListener(v -> {
-
             getFragmentManager().popBackStackImmediate();
         });
-
-
     }
 
     private void registerUser(View v) {
@@ -107,36 +104,36 @@ public class RegisterFragment extends Fragment {
         } else if (email.isEmpty() && password.isEmpty()) {
             Toast.makeText(getContext(), "Fields Are Empty!",
                     Toast.LENGTH_SHORT).show();
+        }else {
+            mFirebaseAuth.createUserWithEmailAndPassword(email, password).
+                    addOnCompleteListener(
+                            task -> {
+                                if (task.isSuccessful()) {
+                                    String userID = mFirebaseAuth.getCurrentUser().getUid();
+                                    DocumentReference documentReference = fStore
+                                            .collection("users").document(userID);
+                                    FirebaseUserModel model = new FirebaseUserModel(name, email);
+                                    model.setPhone(phone);
+                                    documentReference.set(model.asMap())
+                                            .addOnSuccessListener(aVoid -> Toast.makeText(getContext(),
+                                                    "User Created", Toast.LENGTH_SHORT).show())
+                                            .addOnFailureListener(e -> Toast.makeText(getContext(),
+                                                    "Failed To Create User", Toast.LENGTH_SHORT).show());
+                                    sharedPreferenceHelper.setIsLoggedIn(true);
+                                    Intent intent
+                                            = new Intent(getContext(),
+                                            HomeActivity.class);
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(getContext(),
+                                            "Email ID is already Registered," +
+                                                    " Please Login",
+                                            Toast.LENGTH_SHORT).show();
+                                    getFragmentManager().popBackStackImmediate();
+
+                                }
+                            });
         }
-        mFirebaseAuth.createUserWithEmailAndPassword(email, password).
-                addOnCompleteListener(
-                        task -> {
-                            if (task.isSuccessful()) {
-                                String userID = mFirebaseAuth.getCurrentUser().getUid();
-                                DocumentReference documentReference = fStore
-                                        .collection("users").document(userID);
-                                FirebaseUserModel model = new FirebaseUserModel(name, email);
-                                model.setPhone(phone);
-                                documentReference.set(model.asMap())
-                                        .addOnSuccessListener(aVoid -> Toast.makeText(getContext(),
-                                                "User Created", Toast.LENGTH_SHORT).show())
-                                        .addOnFailureListener(e -> Toast.makeText(getContext(),
-                                                "Failed To Create User", Toast.LENGTH_SHORT).show());
-                                sharedPreferenceHelper.setIsLoggedIn(true);
-                                Intent intent
-                                        = new Intent(getContext(),
-                                        HomeActivity.class);
-                                startActivity(intent);
-                            } else {
-
-                                Toast.makeText(getContext(),
-                                        "Email ID is already Registered," +
-                                                " Please Login",
-                                        Toast.LENGTH_SHORT).show();
-                                getFragmentManager().popBackStackImmediate();
-
-                            }
-                        });
 
     }
 }

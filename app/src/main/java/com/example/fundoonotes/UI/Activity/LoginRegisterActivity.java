@@ -1,16 +1,16 @@
-package com.example.fundoonotes.Authentication.Activity;
+package com.example.fundoonotes.UI.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
 import com.example.fundoonotes.R;
-import com.example.fundoonotes.Authentication.Fragments.RegisterFragment;
-import com.example.fundoonotes.Authentication.Fragments.LoginFragment;
+import com.example.fundoonotes.UI.Fragments.RegisterFragment;
+import com.example.fundoonotes.UI.Fragments.LoginFragment;
 
 public class LoginRegisterActivity extends AppCompatActivity {
 
-    private static final String LOGIN_FRAGMENT_TAG = "LoginFragment";
+    private static final String TAG = "LoginRegisterActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +27,10 @@ public class LoginRegisterActivity extends AppCompatActivity {
     }
 
     public void initLoginFragment() {
-        if(getSupportFragmentManager().findFragmentByTag(LOGIN_FRAGMENT_TAG) == null) {
+        if(getSupportFragmentManager().findFragmentByTag(TAG) == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container,
-                            new LoginFragment(), LOGIN_FRAGMENT_TAG).commit();
+                            new LoginFragment(), TAG).commit();
         }
     }
 

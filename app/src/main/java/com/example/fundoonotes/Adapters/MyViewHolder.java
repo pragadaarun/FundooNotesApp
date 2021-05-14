@@ -1,5 +1,4 @@
-package com.example.fundoonotes.Firebase;
-
+package com.example.fundoonotes.Adapters;
 
 import android.view.View;
 import android.widget.TextView;

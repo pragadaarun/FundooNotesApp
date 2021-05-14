@@ -1,4 +1,4 @@
-package com.example.fundoonotes.Firebase;
+package com.example.fundoonotes.HelperClasses;
 
 public interface CallBack<T>{
     void onSuccess(T data);

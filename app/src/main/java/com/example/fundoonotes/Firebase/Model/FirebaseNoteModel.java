@@ -1,7 +1,9 @@
-package com.example.fundoonotes.Firebase;
+package com.example.fundoonotes.Firebase.Model;
+
+import android.util.Log;
 
 public class FirebaseNoteModel {
-
+    private static final String TAG = "FirebaseNoteModel";
     private String title;
     private String description;
 
@@ -13,6 +15,7 @@ public class FirebaseNoteModel {
 
     public FirebaseNoteModel(String title, String description)
     {
+        Log.e(TAG,"");
         this.title = title;
         this.description = description;
     }

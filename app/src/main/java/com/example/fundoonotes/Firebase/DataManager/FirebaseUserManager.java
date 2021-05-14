@@ -1,4 +1,4 @@
-package com.example.fundoonotes.Firebase;
+package com.example.fundoonotes.Firebase.DataManager;
 
 import com.example.fundoonotes.Firebase.Model.FirebaseUserModel;
 import com.example.fundoonotes.HelperClasses.CallBack;

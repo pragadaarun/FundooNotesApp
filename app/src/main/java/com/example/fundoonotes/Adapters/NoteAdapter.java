@@ -5,9 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.fundoonotes.Firebase.CallBack;
-import com.example.fundoonotes.Firebase.FirebaseNoteModel;
-import com.example.fundoonotes.Firebase.MyViewHolder;
+import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
+import com.example.fundoonotes.HelperClasses.OnNoteListener;
 import com.example.fundoonotes.R;
 
 import java.util.ArrayList;
@@ -18,13 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     private final ArrayList<FirebaseNoteModel> notesList;
-    private CallBack<Integer> noteClick;
+    private OnNoteListener noteClick;
 
-    public NoteAdapter(ArrayList<FirebaseNoteModel> list, CallBack<Integer> noteClick){
+    public NoteAdapter(ArrayList<FirebaseNoteModel> list, OnNoteListener noteClick){
         this.notesList = list;
         this.noteClick = noteClick;
     }
-
 
     @NonNull
     @Override

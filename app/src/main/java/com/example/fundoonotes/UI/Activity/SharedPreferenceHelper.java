@@ -1,4 +1,4 @@
-package com.example.fundoonotes.Authentication.Activity;
+package com.example.fundoonotes.UI.Activity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,7 +6,7 @@ import android.util.Log;
 
 public class SharedPreferenceHelper {
     private Context context;
-    public static final String SHARED_PREFERENCES = "sharedPreferences";
+    public static final String SHARED_PREFERENCES = "SharedPreferenceHelper";
     public static final String IS_LOGGED_IN = "isLoggedIn";
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;

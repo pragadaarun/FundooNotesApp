@@ -1,4 +1,4 @@
-package com.example.fundoonotes.DashBoard.Fragments;
+package com.example.fundoonotes.DashBoard.Fragments.Notes;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,7 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.fundoonotes.HelperClasses.CallBack;
-import com.example.fundoonotes.Firebase.FirebaseNoteManager;
+import com.example.fundoonotes.Firebase.DataManager.FirebaseNoteManager;
 import com.example.fundoonotes.R;
 
 import java.util.Objects;

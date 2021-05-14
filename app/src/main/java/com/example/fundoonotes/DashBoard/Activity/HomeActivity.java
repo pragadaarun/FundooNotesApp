@@ -7,44 +7,27 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.example.fundoonotes.DashBoard.Fragments.AddNoteFragment;
+import com.example.fundoonotes.DashBoard.Fragments.Notes.AddNoteFragment;
 import com.example.fundoonotes.DashBoard.Fragments.ArchiveFragment;
-import com.example.fundoonotes.DashBoard.Fragments.NotesFragment;
+import com.example.fundoonotes.DashBoard.Fragments.Notes.NotesFragment;
 import com.example.fundoonotes.DashBoard.Fragments.TrashFragment;
-import com.example.fundoonotes.Firebase.CallBack;
-import com.example.fundoonotes.Firebase.FirebaseNoteModel;
-import com.example.fundoonotes.Firebase.FirebaseUserManager;
-import com.example.fundoonotes.Firebase.FirebaseUserModel;
-import com.example.fundoonotes.Firebase.NoteAdapter;
+import com.example.fundoonotes.HelperClasses.CallBack;
+import com.example.fundoonotes.Firebase.DataManager.FirebaseUserManager;
+import com.example.fundoonotes.Firebase.Model.FirebaseUserModel;
 import com.example.fundoonotes.R;
 import com.example.fundoonotes.DashBoard.Fragments.ReminderFragment;
 import com.example.fundoonotes.UI.Activity.LoginRegisterActivity;
 import com.example.fundoonotes.UI.Activity.SharedPreferenceHelper;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Source;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
 
