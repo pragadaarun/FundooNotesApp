@@ -36,11 +36,26 @@ public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> {
         FirebaseNoteModel note = notesList.get(position);
         holder.noteTitle.setText(note.getTitle());
         holder.noteDescription.setText(note.getDescription());
+        holder.view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String noteId = notesList.get(position).getNoteID();
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         Log.e("Note Adapter", "get Item Count" + notesList.size());
         return notesList.size();
+    }
+
+    public void removeNote(int position){
+        notesList.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public FirebaseNoteModel getItem(int position) {
+        return notesList.get(position);
     }
 }

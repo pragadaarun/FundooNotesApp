@@ -28,7 +28,6 @@ public class NotesFragment extends Fragment {
     private static final String TAG = "NotesFragment";
     FirebaseNoteManager firebaseNoteManager;
     private RecyclerView recyclerView;
-    private final ArrayList<FirebaseNoteModel> notes = new ArrayList<FirebaseNoteModel>();
     private NoteAdapter notesAdapter;
     private NotesViewModel notesViewModel;
 
@@ -43,19 +42,14 @@ public class NotesFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_notes, container, false);
         final StaggeredGridLayoutManager layoutManager = new
-                StaggeredGridLayoutManager(2,
+                StaggeredGridLayoutManager(1,
                 StaggeredGridLayoutManager.VERTICAL);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         firebaseNoteManager = new FirebaseNoteManager();
         notesViewModel = new ViewModelProvider(this).get(NotesViewModel.class);
-        return view;
-    }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         notesViewModel.notesMutableLiveData.observe(getViewLifecycleOwner(), new Observer<ViewState<ArrayList<FirebaseNoteModel>>>() {
             @Override
             public void onChanged(ViewState<ArrayList<FirebaseNoteModel>> arrayListViewState) {
@@ -78,9 +72,15 @@ public class NotesFragment extends Fragment {
             }
         });
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-
 
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -91,8 +91,9 @@ public class NotesFragment extends Fragment {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
                 try {
-                    notes.remove(position);
-                    notesAdapter.notifyDataSetChanged();
+                    String noteId = notesAdapter.getItem(position).getNoteID();
+                    notesAdapter.removeNote(position);
+                    firebaseNoteManager.moveToTrash("Notes","Trash", noteId);
                 }catch(IndexOutOfBoundsException e) {
                     e.printStackTrace();
                 }

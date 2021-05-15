@@ -1,21 +1,25 @@
 package com.example.fundoonotes.Firebase.Model;
 
-import android.util.Log;
-
 public class FirebaseNoteModel {
     private static final String TAG = "FirebaseNoteModel";
     private String title;
     private String description;
+    private String noteID;
+
+    public FirebaseNoteModel() {
+
+    }
 
 
-    public FirebaseNoteModel()
+    public FirebaseNoteModel(String title, String description, String noteID)
     {
-
+        this.title = title;
+        this.description = description;
+        this.noteID = noteID;
     }
 
     public FirebaseNoteModel(String title, String description)
     {
-        Log.e(TAG,"");
         this.title = title;
         this.description = description;
     }
@@ -35,5 +39,13 @@ public class FirebaseNoteModel {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setNoteID(String noteID) {
+        this.noteID = noteID;
+    }
+
+    public String getNoteID() {
+        return noteID;
     }
 }

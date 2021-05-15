@@ -2,6 +2,7 @@ package com.example.fundoonotes.DashBoard.Fragments.Notes;
 
 import android.util.Log;
 import com.example.fundoonotes.Firebase.DataManager.FirebaseNoteManager;
+import com.example.fundoonotes.Firebase.DataManager.NoteManager;
 import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
 import com.example.fundoonotes.HelperClasses.CallBack;
 import com.example.fundoonotes.HelperClasses.ViewState;
@@ -13,7 +14,7 @@ public class NotesViewModel extends ViewModel {
     MutableLiveData<ViewState<ArrayList<FirebaseNoteModel>>> notesMutableLiveData =
             new MutableLiveData<>();
     private static final String TAG = "NotesViewModel";
-    private FirebaseNoteManager firebaseNoteManager;
+    private NoteManager firebaseNoteManager;
 
     public NotesViewModel() {
         firebaseNoteManager = new FirebaseNoteManager();
