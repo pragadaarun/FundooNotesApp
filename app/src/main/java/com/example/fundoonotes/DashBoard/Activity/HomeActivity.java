@@ -43,6 +43,7 @@ import com.squareup.picasso.Picasso;
 public class HomeActivity extends AppCompatActivity {
 
     private static final int ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE = 1000;
+    private static final int PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE = 201;
     public static FloatingActionButton addNote;
     FirebaseAuth firebaseAuth;
     private DrawerLayout drawer;
@@ -106,15 +107,40 @@ public class HomeActivity extends AppCompatActivity {
         userDp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent galleryIntent = new
-                        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(galleryIntent,
-                        ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE);
+                if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    Intent galleryIntent = new
+                            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(galleryIntent,
+                            ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE);
+                } else{
+                    requestPermissions(new String[]{
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                    }, PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE);
+                }
             }
         });
 
         StorageReference profileRef = storageReference.child("users/"+firebaseAuth.getCurrentUser().getUid()+"/profile.jpg");
         profileRef.getDownloadUrl().addOnSuccessListener(uri -> Picasso.get().load(uri).into(userDp));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted.
+                Intent galleryIntent = new
+                        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(galleryIntent,
+                        ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE);
+            } else {
+                // User refused to grant permission.
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+
+        }
     }
 
     @Override
