@@ -5,15 +5,20 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.widget.Toolbar;
-
 import com.example.fundoonotes.DashBoard.Fragments.Notes.AddNoteFragment;
 import com.example.fundoonotes.DashBoard.Fragments.ArchiveFragment;
 import com.example.fundoonotes.DashBoard.Fragments.Notes.NotesFragment;
@@ -25,17 +30,26 @@ import com.example.fundoonotes.R;
 import com.example.fundoonotes.DashBoard.Fragments.ReminderFragment;
 import com.example.fundoonotes.UI.Activity.LoginRegisterActivity;
 import com.example.fundoonotes.UI.Activity.SharedPreferenceHelper;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 public class HomeActivity extends AppCompatActivity {
 
+    private static final int ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE = 1000;
     public static FloatingActionButton addNote;
     FirebaseAuth firebaseAuth;
     private DrawerLayout drawer;
     SharedPreferenceHelper sharedPreferenceHelper;
     private final FirebaseUserManager firebaseUserManager = new FirebaseUserManager();
+    private NotesFragment notesFragment;
+    StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +61,7 @@ public class HomeActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         sharedPreferenceHelper = new SharedPreferenceHelper(this);
         addNote = findViewById(R.id.add_note);
+        notesFragment = new NotesFragment();
 
         addNote.setOnClickListener(v -> {
             getSupportFragmentManager().beginTransaction()
@@ -72,6 +87,7 @@ public class HomeActivity extends AppCompatActivity {
         View headerView = navigationView.getHeaderView(0);
         TextView userName = headerView.findViewById(R.id.user_name_display);
         TextView userEmail = headerView.findViewById(R.id.user_email_display);
+        ImageView userDp = headerView.findViewById(R.id.user_profile);
         firebaseUserManager.getUserDetails(new CallBack<FirebaseUserModel>() {
             @Override
             public void onSuccess(FirebaseUserModel data) {
@@ -86,13 +102,59 @@ public class HomeActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
             }
         });
+
+        userDp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent galleryIntent = new
+                        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(galleryIntent,
+                        ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE);
+            }
+        });
+
+        StorageReference profileRef = storageReference.child("users/"+firebaseAuth.getCurrentUser().getUid()+"/profile.jpg");
+        profileRef.getDownloadUrl().addOnSuccessListener(uri -> Picasso.get().load(uri).into(userDp));
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE){
+            if(resultCode == Activity.RESULT_OK){
+                Uri imageUri = data.getData();
+                uploadImageToFirebase(imageUri);
+            }
+        }
+    }
+
+    private void uploadImageToFirebase(Uri imageUri) {
+        firebaseAuth = FirebaseAuth.getInstance();
+        final StorageReference fileRef = storageReference.child("users/"+firebaseAuth.getCurrentUser().getUid()+"/profile.jpg");
+        fileRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        ImageView userDp= findViewById(R.id.user_profile);
+                        Picasso.get().load(uri).into(userDp);
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), "Failed.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.note) {
             getSupportFragmentManager().beginTransaction().replace(R.id.home_fragment_container,
-                    new NotesFragment()).commit();
+                    notesFragment).commit();
         } else if (item.getItemId() == R.id.reminder) {
             getSupportFragmentManager().beginTransaction().replace(R.id.home_fragment_container,
                     new ReminderFragment()).commit();
