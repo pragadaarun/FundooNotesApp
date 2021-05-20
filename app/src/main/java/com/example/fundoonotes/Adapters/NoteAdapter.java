@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
-import com.example.fundoonotes.HelperClasses.OnNoteListener;
 import com.example.fundoonotes.R;
 
 import java.util.ArrayList;
@@ -17,18 +16,18 @@ import androidx.recyclerview.widget.RecyclerView;
 public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     private final ArrayList<FirebaseNoteModel> notesList;
-    private OnNoteListener noteClick;
+    private final MyViewHolder.OnNoteListener onNoteListener;
 
-    public NoteAdapter(ArrayList<FirebaseNoteModel> list, OnNoteListener noteClick){
+    public NoteAdapter(ArrayList<FirebaseNoteModel> list, MyViewHolder.OnNoteListener onNoteListener ){
         this.notesList = list;
-        this.noteClick = noteClick;
+        this.onNoteListener = onNoteListener;
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_details,parent,false);
-        return new MyViewHolder(view, noteClick);
+        return new MyViewHolder(view, onNoteListener);
     }
 
     @Override
@@ -36,18 +35,17 @@ public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> {
         FirebaseNoteModel note = notesList.get(position);
         holder.noteTitle.setText(note.getTitle());
         holder.noteDescription.setText(note.getDescription());
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String noteId = notesList.get(position).getNoteID();
-            }
-        });
+
     }
 
     @Override
     public int getItemCount() {
         Log.e("Note Adapter", "get Item Count" + notesList.size());
         return notesList.size();
+    }
+
+    public void addNewNote(){
+    notifyItemInserted(0);
     }
 
     public void removeNote(int position){

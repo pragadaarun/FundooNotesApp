@@ -30,4 +30,5 @@
     <string name="forgot_password"><u>Forgot Password ?</u></string>
     <string name="note_title_display">Note Title</string>
     <string name="note_description_display">Note Description</string>
+    <string name="update">Update</string>
 </resources>

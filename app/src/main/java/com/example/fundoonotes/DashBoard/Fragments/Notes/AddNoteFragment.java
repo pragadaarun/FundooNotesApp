@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.fundoonotes.Adapters.NoteAdapter;
+import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
 import com.example.fundoonotes.HelperClasses.CallBack;
 import com.example.fundoonotes.Firebase.DataManager.FirebaseNoteManager;
 import com.example.fundoonotes.R;
@@ -40,18 +42,19 @@ public class AddNoteFragment extends Fragment {
         saveNoteButton.setOnClickListener(this::saveToFirebase);
     }
 
-    private void saveToFirebase(View v) {
+    private voiitd saveToFirebase(View v) {
         String title = fAddTitleOfNote.getText().toString();
         String description = fAddDescriptionOfNote.getText().toString();
         if (!title.isEmpty() || !description.isEmpty()) {
             FirebaseNoteManager firebaseNoteManager = new FirebaseNoteManager();
             firebaseNoteManager.addNote(title, description, new CallBack<Boolean>() {
+
                 @Override
                 public void onSuccess(Boolean data) {
                     Toast.makeText(getContext(),
                             "Note Created Successfully",
                             Toast.LENGTH_SHORT).show();
-                    getFragmentManager().popBackStackImmediate();
+                    getFragmentManager().popBackStack();
                 }
 
                 @Override

@@ -15,11 +15,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import com.example.fundoonotes.HelperClasses.CallBack;
+
+import com.example.fundoonotes.Adapters.MyViewHolder;
 import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
 import com.example.fundoonotes.Firebase.DataManager.FirebaseNoteManager;
 import com.example.fundoonotes.Adapters.NoteAdapter;
-import com.example.fundoonotes.HelperClasses.OnNoteListener;
 import com.example.fundoonotes.HelperClasses.ViewState;
 import com.example.fundoonotes.R;
 import java.util.ArrayList;
@@ -58,10 +58,30 @@ public class NotesFragment extends Fragment {
                 } else if (arrayListViewState instanceof ViewState.Success) {
                     ArrayList<FirebaseNoteModel> notes = ((ViewState.Success<ArrayList<FirebaseNoteModel>>) arrayListViewState).getData();
                     Log.e(TAG, "onNoteReceived: " + notes);
-                    notesAdapter = new NoteAdapter(notes, new OnNoteListener() {
+                    notesAdapter = new NoteAdapter(notes, new MyViewHolder.OnNoteListener() {
                         @Override
-                        public void onNoteClick(int position) {
-                            Toast.makeText(getContext(), "onNoteClick", Toast.LENGTH_SHORT).show();
+                        public void onNoteClick(int position, View viewHolder) {
+                            Toast.makeText(getContext(),
+                                    "Note Clicked at Position " + position,
+                                    Toast.LENGTH_SHORT).show();
+                            String title = notesAdapter.getItem(position).getTitle();
+                            String description = notesAdapter.getItem(position).getDescription();
+                            String noteID = notesAdapter.getItem(position).getNoteID();
+                            //Put the value
+                            UpdateNoteFragment updateNoteFragment = new UpdateNoteFragment();
+                            Bundle noteToUpdate = new Bundle();
+
+                            noteToUpdate.putString("title", title);
+                            noteToUpdate.putString("description",
+                                    description);
+                            noteToUpdate.putString("noteID",
+                                    noteID);
+                            updateNoteFragment.setArguments(noteToUpdate);
+                            getFragmentManager().beginTransaction().
+                                    replace(R.id.home_fragment_container,
+                                            updateNoteFragment)
+                                    .addToBackStack(null).commit();
+
                         }
                     });
                     recyclerView.setAdapter(notesAdapter);
@@ -71,7 +91,6 @@ public class NotesFragment extends Fragment {
                 }
             }
         });
-
         return view;
     }
 

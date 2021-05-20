@@ -29,11 +29,10 @@ public class FirebaseNoteManager implements NoteManager {
     private static final String TAG = "FirebaseNoteManager";
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-    private String COLLECTIONS = "users";
-    private String NOTES_COLLECTIONS = "notes";
-    private String NOTE_TITLE = "title";
-    private String NOTE_DESCRIPTION = "description";
-    private String TRASH_COLLECTIONS = "trash";
+    private final String COLLECTIONS = "users";
+    private final String NOTES_COLLECTIONS = "notes";
+    private final String NOTE_TITLE = "title";
+    private final String NOTE_DESCRIPTION = "description";
     DocumentReference fromCollection;
     DocumentReference toDocument;
 
@@ -103,6 +102,7 @@ public class FirebaseNoteManager implements NoteManager {
                     .collection(NOTES_COLLECTIONS).document(noteId);
         }
         if(toPath == "Trash"){
+            String TRASH_COLLECTIONS = "trash";
             toDocument = firebaseFirestore.collection(COLLECTIONS).document(firebaseUser.getUid())
                     .collection(TRASH_COLLECTIONS).document();
         }
