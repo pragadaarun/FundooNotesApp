@@ -42,7 +42,7 @@ public class AddNoteFragment extends Fragment {
         saveNoteButton.setOnClickListener(this::saveToFirebase);
     }
 
-    private voiitd saveToFirebase(View v) {
+    private void saveToFirebase(View v) {
         String title = fAddTitleOfNote.getText().toString();
         String description = fAddDescriptionOfNote.getText().toString();
         if (!title.isEmpty() || !description.isEmpty()) {
