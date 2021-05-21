@@ -45,6 +45,7 @@ public class HomeActivity extends AppCompatActivity {
     private static final int ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE = 1000;
     private static final int PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE = 201;
     public static FloatingActionButton addNote;
+    public static boolean IS_LINEAR_LAYOUT;
     FirebaseAuth firebaseAuth;
     private DrawerLayout drawer;
     SharedPreferenceHelper sharedPreferenceHelper;
@@ -89,6 +90,21 @@ public class HomeActivity extends AppCompatActivity {
         TextView userName = headerView.findViewById(R.id.user_name_display);
         TextView userEmail = headerView.findViewById(R.id.user_email_display);
         ImageView userDp = headerView.findViewById(R.id.user_profile);
+        ImageView linearIcon = findViewById(R.id.linearIcon);
+        ImageView gridIcon = findViewById(R.id.gridIcon);
+
+        gridIcon.setOnClickListener(v -> {
+            gridIcon.setVisibility(View.INVISIBLE);
+            linearIcon.setVisibility(View.VISIBLE);
+            IS_LINEAR_LAYOUT = false;
+        });
+
+        linearIcon.setOnClickListener(v -> {
+            gridIcon.setVisibility(View.VISIBLE);
+            linearIcon.setVisibility(View.INVISIBLE);
+            IS_LINEAR_LAYOUT = true;
+        });
+
         firebaseUserManager.getUserDetails(new CallBack<FirebaseUserModel>() {
             @Override
             public void onSuccess(FirebaseUserModel data) {

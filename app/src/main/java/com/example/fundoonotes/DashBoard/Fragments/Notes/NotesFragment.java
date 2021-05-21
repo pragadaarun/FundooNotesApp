@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -23,6 +24,7 @@ import com.example.fundoonotes.Adapters.NoteAdapter;
 import com.example.fundoonotes.HelperClasses.ViewState;
 import com.example.fundoonotes.R;
 import java.util.ArrayList;
+import com.example.fundoonotes.DashBoard.Activity.HomeActivity;
 
 public class NotesFragment extends Fragment {
     private static final String TAG = "NotesFragment";
@@ -30,6 +32,7 @@ public class NotesFragment extends Fragment {
     private RecyclerView recyclerView;
     private NoteAdapter notesAdapter;
     private NotesViewModel notesViewModel;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,11 +43,15 @@ public class NotesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_notes, container, false);
-        final StaggeredGridLayoutManager layoutManager = new
-                StaggeredGridLayoutManager(1,
-                StaggeredGridLayoutManager.VERTICAL);
+        return inflater.inflate(R.layout.fragment_notes, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         recyclerView = view.findViewById(R.id.recyclerView);
+        layoutManager = decideLayoutManager(HomeActivity.IS_LINEAR_LAYOUT);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         firebaseNoteManager = new FirebaseNoteManager();
@@ -91,12 +98,6 @@ public class NotesFragment extends Fragment {
                 }
             }
         });
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -108,7 +109,7 @@ public class NotesFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getAdapterPosition();
+                int position = viewHolder.getBindingAdapterPosition();
                 try {
                     String noteId = notesAdapter.getItem(position).getNoteID();
                     notesAdapter.removeNote(position);
@@ -125,5 +126,16 @@ public class NotesFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+    }
+
+    public RecyclerView.LayoutManager decideLayoutManager(boolean isLinear) {
+        if (isLinear) {
+            layoutManager = new
+                    LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
+
+        } else {
+            layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        }
+        return layoutManager;
     }
 }
