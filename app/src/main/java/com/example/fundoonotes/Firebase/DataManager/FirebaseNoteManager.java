@@ -35,6 +35,7 @@ public class FirebaseNoteManager implements NoteManager {
     private final String NOTE_DESCRIPTION = "description";
     DocumentReference fromCollection;
     DocumentReference toDocument;
+    String newNoteID;
 
     @Override
     public void getAllNotes(CallBack<ArrayList<FirebaseNoteModel>> listener) {
@@ -76,7 +77,7 @@ public class FirebaseNoteManager implements NoteManager {
     }
 
     @Override
-    public void addNote(String title, String description, CallBack<Boolean> addListener) {
+    public void addNote(String title, String description, CallBack<String> addListener) {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DocumentReference documentReference = firebaseFirestore
                 .collection(COLLECTIONS)
@@ -89,8 +90,13 @@ public class FirebaseNoteManager implements NoteManager {
 
         documentReference.set(note)
                 .addOnSuccessListener(aVoid -> {
-                    addListener.onSuccess(true);
-                })
+                    newNoteID = documentReference.getId();
+                    addListener.onSuccess(newNoteID);
+
+                    newNoteID = documentReference.getId();
+                    FirebaseNoteModel firebaseNoteModel = new FirebaseNoteModel();
+                    firebaseNoteModel.setNoteID(newNoteID);
+                    Log.e(TAG, "newNoteID "+ newNoteID );                })
                 .addOnFailureListener(addListener::onFailure
                 );
     }

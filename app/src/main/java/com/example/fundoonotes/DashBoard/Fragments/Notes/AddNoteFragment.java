@@ -1,6 +1,7 @@
 package com.example.fundoonotes.DashBoard.Fragments.Notes;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,10 @@ import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
 import com.example.fundoonotes.HelperClasses.CallBack;
 import com.example.fundoonotes.Firebase.DataManager.FirebaseNoteManager;
 import com.example.fundoonotes.R;
+import com.example.fundoonotes.SQLiteDataManager.DatabaseManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
@@ -23,7 +28,14 @@ import static com.example.fundoonotes.DashBoard.Activity.HomeActivity.addNote;
 
 
 public class AddNoteFragment extends Fragment {
+
+    private static final String TAG = "AddNoteFragment";
     private EditText fAddTitleOfNote, fAddDescriptionOfNote;
+    private String docID;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    FirebaseFirestore firebaseFirestore;
+    DatabaseManager databaseManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater,  ViewGroup container,
@@ -38,6 +50,9 @@ public class AddNoteFragment extends Fragment {
         Button saveNoteButton = (Button) Objects.requireNonNull(getView()).findViewById(R.id.saveNoteButton);
         fAddTitleOfNote = (EditText) getView().findViewById(R.id.editTextTitle);
         fAddDescriptionOfNote = (EditText) getView().findViewById(R.id.editTextDescription);
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         saveNoteButton.setOnClickListener(this::saveToFirebase);
     }
@@ -45,15 +60,27 @@ public class AddNoteFragment extends Fragment {
     private void saveToFirebase(View v) {
         String title = fAddTitleOfNote.getText().toString();
         String description = fAddDescriptionOfNote.getText().toString();
+        String user = firebaseUser.getDisplayName();
+        String email = firebaseUser.getEmail();
         if (!title.isEmpty() || !description.isEmpty()) {
             FirebaseNoteManager firebaseNoteManager = new FirebaseNoteManager();
-            firebaseNoteManager.addNote(title, description, new CallBack<Boolean>() {
+            firebaseNoteManager.addNote(title, description, new CallBack<String>() {
 
                 @Override
-                public void onSuccess(Boolean data) {
+                public void onSuccess(String data) {
                     Toast.makeText(getContext(),
                             "Note Created Successfully",
                             Toast.LENGTH_SHORT).show();
+
+                    docID = data;
+                    databaseManager = new DatabaseManager(getContext());
+                    if (title.length() != 0 && description.length() !=0) {
+                        databaseManager.addNotes(user,docID,title,description);
+                        Toast.makeText(getContext(),"note saved in SqliteDB" + docID + " + " + title ,Toast.LENGTH_SHORT).show();
+                    } else {
+                        //toastMessage("You must put something in the text field!");
+                    }
+                    Log.e(TAG, "onSuccess: " + docID );
                     getFragmentManager().popBackStack();
                 }
 
