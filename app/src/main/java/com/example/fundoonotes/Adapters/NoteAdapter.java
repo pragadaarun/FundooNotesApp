@@ -1,5 +1,7 @@
 package com.example.fundoonotes.Adapters;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,18 +11,23 @@ import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
 import com.example.fundoonotes.R;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
-    private final ArrayList<FirebaseNoteModel> notesList;
+    private ArrayList<FirebaseNoteModel> notesList;
     private final MyViewHolder.OnNoteListener onNoteListener;
+    private ArrayList<FirebaseNoteModel> notesSource;
+    private Timer timer;
 
     public NoteAdapter(ArrayList<FirebaseNoteModel> list, MyViewHolder.OnNoteListener onNoteListener ){
         this.notesList = list;
         this.onNoteListener = onNoteListener;
+        notesSource = notesList;
     }
 
     @NonNull
@@ -44,8 +51,9 @@ public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> {
         return notesList.size();
     }
 
-    public void addNewNote(){
-    notifyItemInserted(0);
+    public void addNote(FirebaseNoteModel note){
+        notesList.add(0, note);
+        notifyItemInserted(0);
     }
 
     public void removeNote(int position){
@@ -56,4 +64,5 @@ public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> {
     public FirebaseNoteModel getItem(int position) {
         return notesList.get(position);
     }
+
 }

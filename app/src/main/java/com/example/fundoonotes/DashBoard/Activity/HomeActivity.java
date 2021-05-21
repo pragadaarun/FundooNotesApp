@@ -23,6 +23,7 @@ import com.example.fundoonotes.DashBoard.Fragments.Notes.AddNoteFragment;
 import com.example.fundoonotes.DashBoard.Fragments.ArchiveFragment;
 import com.example.fundoonotes.DashBoard.Fragments.Notes.NotesFragment;
 import com.example.fundoonotes.DashBoard.Fragments.TrashFragment;
+import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
 import com.example.fundoonotes.HelperClasses.CallBack;
 import com.example.fundoonotes.Firebase.DataManager.FirebaseUserManager;
 import com.example.fundoonotes.Firebase.Model.FirebaseUserModel;
@@ -40,7 +41,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements AddNoteFragment.AddNoteListener{
 
     private static final int ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE = 1000;
     private static final int PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE = 201;
@@ -52,6 +53,7 @@ public class HomeActivity extends AppCompatActivity {
     private final FirebaseUserManager firebaseUserManager = new FirebaseUserManager();
     private NotesFragment notesFragment;
     StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +85,7 @@ public class HomeActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.home_fragment_container,
-                    new NotesFragment()).commit();
+                    notesFragment).commit();
             navigationView.setCheckedItem(R.id.note);
         }
         View headerView = navigationView.getHeaderView(0);
@@ -94,15 +96,17 @@ public class HomeActivity extends AppCompatActivity {
         ImageView gridIcon = findViewById(R.id.gridIcon);
 
         gridIcon.setOnClickListener(v -> {
-            gridIcon.setVisibility(View.INVISIBLE);
+            gridIcon.setVisibility(View.GONE);
             linearIcon.setVisibility(View.VISIBLE);
             IS_LINEAR_LAYOUT = false;
+            notesFragment.setLayoutManager(IS_LINEAR_LAYOUT);
         });
 
         linearIcon.setOnClickListener(v -> {
             gridIcon.setVisibility(View.VISIBLE);
-            linearIcon.setVisibility(View.INVISIBLE);
+            linearIcon.setVisibility(View.GONE);
             IS_LINEAR_LAYOUT = true;
+            notesFragment.setLayoutManager(IS_LINEAR_LAYOUT);
         });
 
         firebaseUserManager.getUserDetails(new CallBack<FirebaseUserModel>() {
@@ -229,5 +233,10 @@ public class HomeActivity extends AppCompatActivity {
         else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onNoteAdded(FirebaseNoteModel note) {
+        notesFragment.addNote(note);
     }
 }

@@ -51,7 +51,7 @@ public class NotesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView = view.findViewById(R.id.recyclerView);
-        layoutManager = decideLayoutManager(HomeActivity.IS_LINEAR_LAYOUT);
+        setLayoutManager(HomeActivity.IS_LINEAR_LAYOUT);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         firebaseNoteManager = new FirebaseNoteManager();
@@ -88,7 +88,6 @@ public class NotesFragment extends Fragment {
                                     replace(R.id.home_fragment_container,
                                             updateNoteFragment)
                                     .addToBackStack(null).commit();
-
                         }
                     });
                     recyclerView.setAdapter(notesAdapter);
@@ -128,7 +127,7 @@ public class NotesFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
     }
 
-    public RecyclerView.LayoutManager decideLayoutManager(boolean isLinear) {
+    public void setLayoutManager(boolean isLinear) {
         if (isLinear) {
             layoutManager = new
                     LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
@@ -136,6 +135,10 @@ public class NotesFragment extends Fragment {
         } else {
             layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         }
-        return layoutManager;
+        recyclerView.setLayoutManager(layoutManager);
+    }
+
+    public void addNote(FirebaseNoteModel note) {
+        notesAdapter.addNote(note);
     }
 }

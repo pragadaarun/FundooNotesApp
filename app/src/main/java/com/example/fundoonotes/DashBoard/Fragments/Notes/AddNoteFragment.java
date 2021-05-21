@@ -1,5 +1,6 @@
 package com.example.fundoonotes.DashBoard.Fragments.Notes;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -36,6 +38,13 @@ public class AddNoteFragment extends Fragment {
     FirebaseUser firebaseUser;
     FirebaseFirestore firebaseFirestore;
     DatabaseManager databaseManager;
+    AddNoteListener addNoteListener;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        addNoteListener = (AddNoteListener) context;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater,  ViewGroup container,
@@ -53,7 +62,6 @@ public class AddNoteFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
         saveNoteButton.setOnClickListener(this::saveToFirebase);
     }
 
@@ -71,15 +79,12 @@ public class AddNoteFragment extends Fragment {
                     Toast.makeText(getContext(),
                             "Note Created Successfully",
                             Toast.LENGTH_SHORT).show();
-
+                    FirebaseNoteModel note = new FirebaseNoteModel(title, description,data);
+                    addNoteListener.onNoteAdded(note);
                     docID = data;
                     databaseManager = new DatabaseManager(getContext());
-                    if (title.length() != 0 && description.length() !=0) {
-                        databaseManager.addNotes(user,docID,title,description);
-                        Toast.makeText(getContext(),"note saved in SqliteDB" + docID + " + " + title ,Toast.LENGTH_SHORT).show();
-                    } else {
-                        //toastMessage("You must put something in the text field!");
-                    }
+                    databaseManager.addNotes(user,docID,title,description);
+
                     Log.e(TAG, "onSuccess: " + docID );
                     getFragmentManager().popBackStack();
                 }
@@ -100,6 +105,10 @@ public class AddNoteFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         addNote.show();
+    }
+
+    public interface AddNoteListener{
+        void onNoteAdded(FirebaseNoteModel note);
     }
 
 }

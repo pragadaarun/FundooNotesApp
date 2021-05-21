@@ -28,8 +28,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:layout_gravity="end"
+                android:background="#00000000"
                 app:srcCompat="@drawable/ic_baseline_dashboard_24"
-                android:visibility="invisible"/>
+                android:visibility="gone"/>
 
             <ImageButton
                 android:id="@+id/linearIcon"
@@ -37,6 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:layout_gravity="end"
+                android:background="#00000000"
                 app:srcCompat="@drawable/ic_baseline_view_stream_24" />
 
         </androidx.appcompat.widget.Toolbar>
@@ -53,19 +55,11 @@
                 android:layout_gravity="bottom|end"
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@color/white"
-                android:backgroundTint="#AAA9A9"
                 android:contentDescription="@string/create_note"
                 android:src="@drawable/ic_baseline_add_circle_outline_24" />
         </FrameLayout>
 
     </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-    </FrameLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_header_container"
@@ -74,6 +68,5 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/navigation_header"
         app:menu="@menu/drawer_menu" />
-
 
 </androidx.drawerlayout.widget.DrawerLayout>

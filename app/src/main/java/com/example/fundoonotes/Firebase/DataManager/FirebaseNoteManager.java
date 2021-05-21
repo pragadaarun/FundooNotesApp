@@ -92,12 +92,8 @@ public class FirebaseNoteManager implements NoteManager {
                 .addOnSuccessListener(aVoid -> {
                     newNoteID = documentReference.getId();
                     addListener.onSuccess(newNoteID);
-
-                    newNoteID = documentReference.getId();
-                    FirebaseNoteModel firebaseNoteModel = new FirebaseNoteModel();
-                    firebaseNoteModel.setNoteID(newNoteID);
-                    Log.e(TAG, "newNoteID "+ newNoteID );                })
-                .addOnFailureListener(addListener::onFailure
+                    Log.e(TAG, "newNoteID "+ newNoteID );
+                }).addOnFailureListener(addListener::onFailure
                 );
     }
 

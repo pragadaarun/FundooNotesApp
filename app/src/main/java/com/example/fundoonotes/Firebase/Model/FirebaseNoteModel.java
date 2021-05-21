@@ -6,24 +6,12 @@ public class FirebaseNoteModel {
     private String description;
     private String noteID;
 
-    public FirebaseNoteModel() {
-
-    }
-
-
     public FirebaseNoteModel(String title, String description, String noteID)
     {
         this.title = title;
         this.description = description;
         this.noteID = noteID;
     }
-
-    public FirebaseNoteModel(String title, String description)
-    {
-        this.title = title;
-        this.description = description;
-    }
-
 
     public String getTitle() {
         return title;
