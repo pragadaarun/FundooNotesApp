@@ -1,33 +1,31 @@
 package com.example.fundoonotes.Adapters;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
 import com.example.fundoonotes.R;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> {
+public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> implements Filterable {
 
     private ArrayList<FirebaseNoteModel> notesList;
     private final MyViewHolder.OnNoteListener onNoteListener;
-    private ArrayList<FirebaseNoteModel> notesSource;
-    private Timer timer;
+    private ArrayList<FirebaseNoteModel> notesSearch;
 
     public NoteAdapter(ArrayList<FirebaseNoteModel> list, MyViewHolder.OnNoteListener onNoteListener ){
         this.notesList = list;
         this.onNoteListener = onNoteListener;
-        notesSource = notesList;
+        notesSearch = notesList;
     }
 
     @NonNull
@@ -65,4 +63,41 @@ public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> {
         return notesList.get(position);
     }
 
+    @Override
+    public Filter getFilter() {
+        return notesFilter;
+    }
+
+    private Filter notesFilter = new Filter() {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            ArrayList<FirebaseNoteModel> filteredList = new ArrayList<>();
+
+            if(constraint == null || constraint.length() == 0){
+                filteredList.addAll(notesSearch);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for(FirebaseNoteModel note : notesSearch) {
+                    if(note.getTitle().toLowerCase().contains(filterPattern)
+                        || note.getDescription().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(note);
+                    }
+                }
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            notesList.clear();
+            notesList.addAll((List) results.values);
+            notifyDataSetChanged();
+        }
+    };
 }

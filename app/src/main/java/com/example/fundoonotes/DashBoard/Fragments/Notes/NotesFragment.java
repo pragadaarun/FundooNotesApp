@@ -141,4 +141,8 @@ public class NotesFragment extends Fragment {
     public void addNote(FirebaseNoteModel note) {
         notesAdapter.addNote(note);
     }
+
+    public void searchText(String newText) {
+        notesAdapter.getFilter().filter(newText);
+    }
 }
