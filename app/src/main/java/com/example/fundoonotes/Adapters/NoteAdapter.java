@@ -11,6 +11,8 @@ import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
 import com.example.fundoonotes.R;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -18,14 +20,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> implements Filterable {
 
+    private static final String TAG = "NoteAdapter";
     private ArrayList<FirebaseNoteModel> notesList;
     private final MyViewHolder.OnNoteListener onNoteListener;
-    private ArrayList<FirebaseNoteModel> notesSearch;
+    private List<FirebaseNoteModel> notesSearch;
 
     public NoteAdapter(ArrayList<FirebaseNoteModel> list, MyViewHolder.OnNoteListener onNoteListener ){
         this.notesList = list;
         this.onNoteListener = onNoteListener;
-        notesSearch = notesList;
+        this.notesSearch = new ArrayList<>(notesList);//(List<FirebaseNoteModel>) notesList.clone();
     }
 
     @NonNull
@@ -75,6 +78,7 @@ public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> implements F
             ArrayList<FirebaseNoteModel> filteredList = new ArrayList<>();
 
             if(constraint == null || constraint.length() == 0){
+                Log.e(TAG, "performFiltering: " + constraint  + "  " + notesSearch.size());
                 filteredList.addAll(notesSearch);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
