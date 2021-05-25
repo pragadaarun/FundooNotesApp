@@ -1,13 +1,15 @@
 package com.example.fundoonotes.Firebase.Model;
 
 public class FirebaseNoteModel {
-    private static final String TAG = "FirebaseNoteModel";
+
+    private String userId;
+    private String noteID;
     private String title;
     private String description;
-    private String noteID;
 
-    public FirebaseNoteModel(String title, String description, String noteID)
+    public FirebaseNoteModel(String userId, String noteID, String title, String description)
     {
+        this.userId = userId;
         this.title = title;
         this.description = description;
         this.noteID = noteID;
@@ -35,5 +37,13 @@ public class FirebaseNoteModel {
 
     public String getNoteID() {
         return noteID;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

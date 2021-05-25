@@ -33,14 +33,14 @@ public class FirebaseNoteManager implements NoteManager {
     private final String NOTES_COLLECTIONS = "notes";
     private final String NOTE_TITLE = "title";
     private final String NOTE_DESCRIPTION = "description";
-    DocumentReference fromCollection;
-    DocumentReference toDocument;
+    DocumentReference fromCollection, toDocument;
     String newNoteID;
 
     @Override
     public void getAllNotes(CallBack<ArrayList<FirebaseNoteModel>> listener) {
         ArrayList<FirebaseNoteModel> notesList = new ArrayList<FirebaseNoteModel>();
-        firebaseFirestore.collection(COLLECTIONS).document(firebaseUser.getUid())
+        String userId = firebaseUser.getUid();
+        firebaseFirestore.collection(COLLECTIONS).document(userId)
                 .collection(NOTES_COLLECTIONS)
                 .orderBy("creationDate", Query.Direction.DESCENDING)
                 .get()
@@ -61,12 +61,11 @@ public class FirebaseNoteManager implements NoteManager {
 
                             Log.e(TAG,"AllNotes " + title + " " + noteId);
 
-                            FirebaseNoteModel note = new FirebaseNoteModel(title, description, noteId);
+                            FirebaseNoteModel note = new FirebaseNoteModel(userId, noteId, title, description);
                             notesList.add(note);
                         }
                         listener.onSuccess(notesList);
                     }
-
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override

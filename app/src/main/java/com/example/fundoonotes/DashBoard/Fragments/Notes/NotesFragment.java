@@ -21,10 +21,14 @@ import com.example.fundoonotes.Adapters.MyViewHolder;
 import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
 import com.example.fundoonotes.Firebase.DataManager.FirebaseNoteManager;
 import com.example.fundoonotes.Adapters.NoteAdapter;
+import com.example.fundoonotes.Firebase.Model.MyViewModelFactory;
 import com.example.fundoonotes.HelperClasses.ViewState;
 import com.example.fundoonotes.R;
 import java.util.ArrayList;
 import com.example.fundoonotes.DashBoard.Activity.HomeActivity;
+import com.example.fundoonotes.SQLiteDataManager.DatabaseHelper;
+import com.example.fundoonotes.SQLiteDataManager.NoteTableManager;
+import com.example.fundoonotes.SQLiteDataManager.SQLiteNoteTableManager;
 
 public class NotesFragment extends Fragment {
     private static final String TAG = "NotesFragment";
@@ -55,9 +59,13 @@ public class NotesFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         firebaseNoteManager = new FirebaseNoteManager();
-        notesViewModel = new ViewModelProvider(this).get(NotesViewModel.class);
+        DatabaseHelper databaseHelper = DatabaseHelper.getInstance(getContext());
+        NoteTableManager noteTableManager = new SQLiteNoteTableManager(databaseHelper);
+        notesViewModel = new ViewModelProvider(this, new MyViewModelFactory(noteTableManager))
+                .get(NotesViewModel.class);
 
-        notesViewModel.notesMutableLiveData.observe(getViewLifecycleOwner(), new Observer<ViewState<ArrayList<FirebaseNoteModel>>>() {
+        notesViewModel.notesMutableLiveData.observe(getViewLifecycleOwner(),
+                new Observer<ViewState<ArrayList<FirebaseNoteModel>>>() {
             @Override
             public void onChanged(ViewState<ArrayList<FirebaseNoteModel>> arrayListViewState) {
                 if(arrayListViewState instanceof ViewState.Loading) {

@@ -6,6 +6,8 @@ import com.example.fundoonotes.Firebase.DataManager.NoteManager;
 import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
 import com.example.fundoonotes.HelperClasses.CallBack;
 import com.example.fundoonotes.HelperClasses.ViewState;
+import com.example.fundoonotes.SQLiteDataManager.NoteTableManager;
+
 import java.util.ArrayList;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -15,14 +17,16 @@ public class NotesViewModel extends ViewModel {
             new MutableLiveData<>();
     private static final String TAG = "NotesViewModel";
     private NoteManager firebaseNoteManager;
+    private NoteTableManager noteTableManager;
 
-    public NotesViewModel() {
+    public NotesViewModel(NoteTableManager noteTableManager) {
         firebaseNoteManager = new FirebaseNoteManager();
+        this.noteTableManager = noteTableManager;
         loadNotes();
     }
 
     private void loadNotes() {
-        notesMutableLiveData.setValue(new ViewState.Loading<>());
+        notesMutableLiveData.setValue(new ViewState.Loading(noteTableManager.getAllNotes()));
         firebaseNoteManager.getAllNotes(new CallBack<ArrayList<FirebaseNoteModel>>() {
             @Override
             public void onSuccess(ArrayList<FirebaseNoteModel> data) {

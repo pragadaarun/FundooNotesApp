@@ -10,12 +10,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.fundoonotes.Adapters.NoteAdapter;
 import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
 import com.example.fundoonotes.HelperClasses.CallBack;
 import com.example.fundoonotes.Firebase.DataManager.FirebaseNoteManager;
 import com.example.fundoonotes.R;
-import com.example.fundoonotes.SQLiteDataManager.DatabaseManager;
+import com.example.fundoonotes.SQLiteDataManager.DatabaseHelper;
+import com.example.fundoonotes.SQLiteDataManager.NoteTableManager;
+import com.example.fundoonotes.SQLiteDataManager.SQLiteNoteTableManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,8 +38,9 @@ public class AddNoteFragment extends Fragment {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     FirebaseFirestore firebaseFirestore;
-    DatabaseManager databaseManager;
+    NoteTableManager noteTableManager;
     AddNoteListener addNoteListener;
+    DatabaseHelper databaseHelper = DatabaseHelper.getInstance(getContext());
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -69,7 +71,8 @@ public class AddNoteFragment extends Fragment {
         String title = fAddTitleOfNote.getText().toString();
         String description = fAddDescriptionOfNote.getText().toString();
         String user = firebaseUser.getDisplayName();
-        String email = firebaseUser.getEmail();
+        String userId = firebaseUser.getUid();
+
         if (!title.isEmpty() || !description.isEmpty()) {
             FirebaseNoteManager firebaseNoteManager = new FirebaseNoteManager();
             firebaseNoteManager.addNote(title, description, new CallBack<String>() {
@@ -79,11 +82,11 @@ public class AddNoteFragment extends Fragment {
                     Toast.makeText(getContext(),
                             "Note Created Successfully",
                             Toast.LENGTH_SHORT).show();
-                    FirebaseNoteModel note = new FirebaseNoteModel(title, description,data);
+                    FirebaseNoteModel note = new FirebaseNoteModel(userId, data, title, description);
                     addNoteListener.onNoteAdded(note);
                     docID = data;
-                    databaseManager = new DatabaseManager(getContext());
-                    databaseManager.addNotes(user,docID,title,description);
+                    noteTableManager = new SQLiteNoteTableManager(databaseHelper);
+                    noteTableManager.addNote(note);
 
                     Log.e(TAG, "onSuccess: " + docID );
                     getFragmentManager().popBackStack();
