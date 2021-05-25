@@ -56,7 +56,9 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
     private final FirebaseUserManager firebaseUserManager = new FirebaseUserManager();
     private NotesFragment notesFragment;
     StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-
+    private ActionBarDrawerToggle toggle;
+    private boolean mToolBarNavigationListenerIsRegistered;
+    private  boolean isFragmentOpen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,23 +76,28 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.home_fragment_container, new AddNoteFragment())
                     .addToBackStack(null).commit();
+            isFragmentOpen = true;
+            displayHomeHamburger();
         });
 
         NavigationView navigationView = findViewById(R.id.navigation_header_container);
         navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
+        toggle = new ActionBarDrawerToggle(this,
                 drawer,
                 toolbar,
                 R.string.drawer_open,
                 R.string.drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+        displayHomeHamburger();
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.home_fragment_container,
                     notesFragment).commit();
             navigationView.setCheckedItem(R.id.note);
         }
+        
         View headerView = navigationView.getHeaderView(0);
         TextView userName = headerView.findViewById(R.id.user_name_display);
         TextView userEmail = headerView.findViewById(R.id.user_email_display);
@@ -148,6 +155,31 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
         profileRef.getDownloadUrl().addOnSuccessListener(uri -> Picasso.get().load(uri).into(userDp));
     }
 
+    public void displayHomeHamburger() {
+        if(isFragmentOpen) {
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            toggle.setDrawerIndicatorEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            if(!mToolBarNavigationListenerIsRegistered) {
+                toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onBackPressed();
+                        isFragmentOpen = false;
+                        displayHomeHamburger();
+                    }
+                });
+                mToolBarNavigationListenerIsRegistered = true;
+            }
+        } else {
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            toggle.setDrawerIndicatorEnabled(true);
+            toggle.setToolbarNavigationClickListener(null);
+            mToolBarNavigationListenerIsRegistered = false;
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -169,6 +201,7 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
     @Override
     public void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if(requestCode == ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE){
             if(resultCode == Activity.RESULT_OK){
                 Uri imageUri = data.getData();
