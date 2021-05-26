@@ -8,9 +8,6 @@ public interface ViewState<T> {
 
     class Loading<T> implements ViewState<T>{
 
-        public Loading(ArrayList<FirebaseNoteModel> allNotes) {
-
-        }
     }
 
     class Success<T> implements ViewState<T>{

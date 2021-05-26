@@ -22,6 +22,8 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
+
+import com.example.fundoonotes.DashBoard.Fragments.Labels.LabelFragment;
 import com.example.fundoonotes.DashBoard.Fragments.Notes.AddNoteFragment;
 import com.example.fundoonotes.DashBoard.Fragments.ArchiveFragment;
 import com.example.fundoonotes.DashBoard.Fragments.Notes.NotesFragment;
@@ -55,6 +57,7 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
     SharedPreferenceHelper sharedPreferenceHelper;
     private final FirebaseUserManager firebaseUserManager = new FirebaseUserManager();
     private NotesFragment notesFragment;
+    private LabelFragment labelFragment;
     StorageReference storageReference = FirebaseStorage.getInstance().getReference();
     private ActionBarDrawerToggle toggle;
     private boolean mToolBarNavigationListenerIsRegistered;
@@ -71,6 +74,7 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
         sharedPreferenceHelper = new SharedPreferenceHelper(this);
         addNote = findViewById(R.id.add_note);
         notesFragment = new NotesFragment();
+        labelFragment = new LabelFragment();
 
         addNote.setOnClickListener(v -> {
             getSupportFragmentManager().beginTransaction()
@@ -261,6 +265,9 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
         } else if (item.getItemId() == R.id.reminder) {
             getSupportFragmentManager().beginTransaction().replace(R.id.home_fragment_container,
                     new ReminderFragment()).commit();
+        } else if (item.getItemId() == R.id.label) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.home_fragment_container,
+                     labelFragment).commit();
         } else if (item.getItemId() == R.id.archive) {
             getSupportFragmentManager().beginTransaction().replace(R.id.home_fragment_container,
                     new ArchiveFragment()).commit();
@@ -295,5 +302,9 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
     @Override
     public void onNoteAdded(FirebaseNoteModel note) {
         notesFragment.addNote(note);
+        isFragmentOpen = false;
+        displayHomeHamburger();
     }
+
+
 }

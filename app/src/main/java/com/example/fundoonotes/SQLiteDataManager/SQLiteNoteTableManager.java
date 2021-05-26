@@ -12,6 +12,8 @@ import com.example.fundoonotes.Firebase.Model.FirebaseUserModel;
 
 import java.util.ArrayList;
 
+import static com.example.fundoonotes.SQLiteDataManager.DatabaseHelper.NOTES_LIST;
+
 public class SQLiteNoteTableManager implements NoteTableManager {
 
     private static final String TAG = "SQLiteNoteTableManager";
@@ -56,7 +58,7 @@ public class SQLiteNoteTableManager implements NoteTableManager {
             notesDetails.put(DatabaseHelper.KEY_TITLE, noteModel.getTitle());
             notesDetails.put(DatabaseHelper.KEY_NOTE, noteModel.getDescription());
 
-            insert = db.insert(DatabaseHelper.NOTES_LIST, null, notesDetails);
+            insert = db.insert(NOTES_LIST, null, notesDetails);
             db.setTransactionSuccessful();
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to add post to database");
@@ -69,7 +71,7 @@ public class SQLiteNoteTableManager implements NoteTableManager {
     @Override
     public ArrayList<FirebaseNoteModel> getAllNotes() {
         ArrayList<FirebaseNoteModel> notesList = new ArrayList<FirebaseNoteModel>();
-        String query = "SELECT * FROM " + DatabaseHelper.NOTES_LIST;
+        String query = "SELECT * FROM " + NOTES_LIST;
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
 
         Cursor cursor;
@@ -105,7 +107,7 @@ public class SQLiteNoteTableManager implements NoteTableManager {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         ContentValues noteToDelete = new ContentValues();
         noteToDelete.put(DatabaseHelper.KEY_ID, noteId);
-        int delete = db.delete(DatabaseHelper.NOTES_LIST, DatabaseHelper.KEY_ID, (String[])(null));
+        int delete = db.delete(NOTES_LIST, DatabaseHelper.KEY_ID, (String[])(null));
         db.close();
         return delete > 0;
     }
@@ -113,7 +115,7 @@ public class SQLiteNoteTableManager implements NoteTableManager {
     @Override
     public void deleteAllNotes() {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        db.execSQL("DELETE FROM " + DatabaseHelper.INSTANCE + "NOTES_LIST");
+        db.execSQL("DELETE FROM "  + NOTES_LIST);
         db.close();
     }
 

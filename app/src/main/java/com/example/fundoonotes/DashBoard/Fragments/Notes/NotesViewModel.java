@@ -26,11 +26,14 @@ public class NotesViewModel extends ViewModel {
     }
 
     private void loadNotes() {
-        notesMutableLiveData.setValue(new ViewState.Loading(noteTableManager.getAllNotes()));
+        notesMutableLiveData.setValue(new ViewState.Loading());
         firebaseNoteManager.getAllNotes(new CallBack<ArrayList<FirebaseNoteModel>>() {
             @Override
             public void onSuccess(ArrayList<FirebaseNoteModel> data) {
                 Log.e(TAG, "onNoteReceived: " + data);
+                noteTableManager.deleteAllNotes();
+                noteTableManager.addAllNotes(data);
+
                 notesMutableLiveData.setValue(new ViewState.Success<>(data));
             }
 

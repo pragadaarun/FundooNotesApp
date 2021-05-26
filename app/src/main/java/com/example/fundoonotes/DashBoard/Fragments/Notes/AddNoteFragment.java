@@ -87,7 +87,6 @@ public class AddNoteFragment extends Fragment {
                     docID = data;
                     noteTableManager = new SQLiteNoteTableManager(databaseHelper);
                     noteTableManager.addNote(note);
-
                     Log.e(TAG, "onSuccess: " + docID );
                     getFragmentManager().popBackStack();
                 }

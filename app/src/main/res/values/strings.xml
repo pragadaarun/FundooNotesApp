@@ -32,4 +32,8 @@
     <string name="note_description_display">Note Description</string>
     <string name="update">Update</string>
     <string name="search_notes">Search Notes</string>
+    <string name="label">Label</string>
+    <string name="save_label_button">Save Label</string>
+    <string name="all_labels">All Labels</string>
+    <string name="save_label">Save Label</string>
 </resources>
