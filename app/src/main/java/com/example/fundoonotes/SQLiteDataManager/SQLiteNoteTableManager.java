@@ -86,14 +86,16 @@ public class SQLiteNoteTableManager implements NoteTableManager {
         String noteId;
         String title;
         String description;
+        long creationTime;
         if(cursor.moveToFirst()) {
             do {
                 userId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_UID));
                 noteId = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_ID));
                 title = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_TITLE));
                 description = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_NOTE));
+                creationTime = 0;
 
-                FirebaseNoteModel note = new FirebaseNoteModel(userId, noteId, title, description);
+                FirebaseNoteModel note = new FirebaseNoteModel(userId, noteId, title, description, creationTime);
                 notesList.add(note);
 
             } while (cursor.moveToNext());

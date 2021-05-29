@@ -1,3 +1,4 @@
+
 package com.example.fundoonotes.DashBoard.Fragments.Labels;
 
 import android.content.Context;
@@ -12,8 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,6 +29,7 @@ import com.example.fundoonotes.Firebase.DataManager.LabelManager;
 import com.example.fundoonotes.Firebase.Model.FirebaseLabelModel;
 import com.example.fundoonotes.Firebase.Model.LabelViewModel;
 import com.example.fundoonotes.HelperClasses.CallBack;
+import com.example.fundoonotes.HelperClasses.OnLabelListener;
 import com.example.fundoonotes.HelperClasses.ViewState;
 import com.example.fundoonotes.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,6 +59,11 @@ public class LabelFragment extends Fragment {
         addLabelListener = (AddLabelListener) context;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -72,7 +82,6 @@ public class LabelFragment extends Fragment {
         return view;
     }
 
-
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 
         super.onActivityCreated(savedInstanceState);
@@ -80,7 +89,6 @@ public class LabelFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
         labelViewModel.labelMutableLiveData.observe(getViewLifecycleOwner(), new Observer<ViewState<ArrayList<FirebaseLabelModel>>>() {
             @Override
             public void onChanged(ViewState<ArrayList<FirebaseLabelModel>> arrayListViewState) {
@@ -88,7 +96,7 @@ public class LabelFragment extends Fragment {
                     Toast.makeText(getContext(), "Loading", Toast.LENGTH_SHORT).show();
                 } else if (arrayListViewState instanceof ViewState.Success) {
                     ArrayList<FirebaseLabelModel> labels = ((ViewState.Success<ArrayList<FirebaseLabelModel>>)arrayListViewState).getData();
-                    labelAdapter = new LabelAdapter(labels, new LabelAdapter.OnLabelListener() {
+                    labelAdapter = new LabelAdapter(labels, new OnLabelListener() {
                         @Override
                         public void OnLabelClick(int position, View viewHolder) {
                             Toast.makeText(getContext(), "Note Clicked at Position " + position, Toast.LENGTH_SHORT).show();
@@ -103,12 +111,10 @@ public class LabelFragment extends Fragment {
                 }
             }
         });
-
     }
 
     private void saveLabelToFirestore(View v) {
         String label = editLabel.getText().toString();
-        long timeID = System.currentTimeMillis();
         if (!label.isEmpty()) {
              labelManager.addLabel(label, new CallBack<String>() {
                     @Override
@@ -117,8 +123,9 @@ public class LabelFragment extends Fragment {
                                 "Created Label", Toast.LENGTH_SHORT).show();
                         FirebaseLabelModel firebaseLabelModel = new FirebaseLabelModel(label,data);
                         addLabelListener.onLabelAdded(firebaseLabelModel);
-                        assert getFragmentManager() != null;
-                        getFragmentManager().popBackStackImmediate();
+                        editLabel.setText(null);
+                        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     }
 
                     @Override
@@ -127,10 +134,18 @@ public class LabelFragment extends Fragment {
                                 "Failed To Create Label", Toast.LENGTH_SHORT).show();
                     }
                 });
-                assert getFragmentManager() != null;
-                getFragmentManager().popBackStackImmediate();
             } else {
-            Toast.makeText(getContext(), "Both fields are Required", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Empty Label cannot Created", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void addLabel(FirebaseLabelModel label) {
+        labelAdapter.addLabel(label);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
     }
 }

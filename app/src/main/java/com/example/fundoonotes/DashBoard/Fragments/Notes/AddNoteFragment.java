@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
+import com.example.fundoonotes.HelperClasses.AddNoteListener;
 import com.example.fundoonotes.HelperClasses.CallBack;
 import com.example.fundoonotes.Firebase.DataManager.FirebaseNoteManager;
 import com.example.fundoonotes.R;
@@ -20,15 +20,11 @@ import com.example.fundoonotes.SQLiteDataManager.SQLiteNoteTableManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.Objects;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import static com.example.fundoonotes.DashBoard.Activity.HomeActivity.addNote;
-
 
 public class AddNoteFragment extends Fragment {
 
@@ -72,6 +68,7 @@ public class AddNoteFragment extends Fragment {
         String description = fAddDescriptionOfNote.getText().toString();
         String user = firebaseUser.getDisplayName();
         String userId = firebaseUser.getUid();
+        long creationTime = 0;
 
         if (!title.isEmpty() || !description.isEmpty()) {
             FirebaseNoteManager firebaseNoteManager = new FirebaseNoteManager();
@@ -82,7 +79,7 @@ public class AddNoteFragment extends Fragment {
                     Toast.makeText(getContext(),
                             "Note Created Successfully",
                             Toast.LENGTH_SHORT).show();
-                    FirebaseNoteModel note = new FirebaseNoteModel(userId, data, title, description);
+                    FirebaseNoteModel note = new FirebaseNoteModel(userId, data, title, description, creationTime);
                     addNoteListener.onNoteAdded(note);
                     docID = data;
                     noteTableManager = new SQLiteNoteTableManager(databaseHelper);
@@ -108,9 +105,4 @@ public class AddNoteFragment extends Fragment {
         super.onDestroy();
         addNote.show();
     }
-
-    public interface AddNoteListener{
-        void onNoteAdded(FirebaseNoteModel note);
-    }
-
 }

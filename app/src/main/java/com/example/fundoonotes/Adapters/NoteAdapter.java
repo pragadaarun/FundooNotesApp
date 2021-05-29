@@ -8,6 +8,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 
 import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
+import com.example.fundoonotes.HelperClasses.OnNoteListener;
 import com.example.fundoonotes.R;
 
 import java.util.ArrayList;
@@ -18,14 +19,17 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> implements Filterable {
+public class NoteAdapter extends RecyclerView.Adapter<BaseViewHolder> implements Filterable {
 
     private static final String TAG = "NoteAdapter";
     private ArrayList<FirebaseNoteModel> notesList;
-    private final MyViewHolder.OnNoteListener onNoteListener;
+    private final OnNoteListener onNoteListener;
     private List<FirebaseNoteModel> notesSearch;
+    private static final int VIEW_TYPE_LOADING = 0;
+    private static final int VIEW_TYPE_NORMAL = 1;
+    private boolean isLoaderVisible = false;
 
-    public NoteAdapter(ArrayList<FirebaseNoteModel> list, MyViewHolder.OnNoteListener onNoteListener ){
+    public NoteAdapter(ArrayList<FirebaseNoteModel> list, OnNoteListener onNoteListener ){
         this.notesList = list;
         this.onNoteListener = onNoteListener;
         this.notesSearch = new ArrayList<>(notesList);//(List<FirebaseNoteModel>) notesList.clone();
@@ -33,17 +37,41 @@ public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> implements F
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_details,parent,false);
-        return new MyViewHolder(view, onNoteListener);
+    public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case VIEW_TYPE_NORMAL:
+                return new MyViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.note_details, parent, false),onNoteListener);
+            case VIEW_TYPE_LOADING:
+                return new ProgressHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loading, parent, false));
+            default:
+                return null;
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        FirebaseNoteModel note = notesList.get(position);
-        holder.noteTitle.setText(note.getTitle());
-        holder.noteDescription.setText(note.getDescription());
+    public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
+        holder.onBind(position);
+    }
 
+    @Override
+    public int getItemViewType(int position) {
+        if (isLoaderVisible) {
+            return position == notesList.size() - 1 ? VIEW_TYPE_LOADING : VIEW_TYPE_NORMAL;
+        } else {
+            return VIEW_TYPE_NORMAL;
+        }
+    }
+
+    public void addItems(ArrayList<FirebaseNoteModel> postItems) {
+        notesList.addAll(postItems);
+        notifyDataSetChanged();
+    }
+
+    public void clear() {
+        notesList.clear();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -104,4 +132,13 @@ public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> implements F
             notifyDataSetChanged();
         }
     };
+
+    public static class ProgressHolder extends BaseViewHolder {
+        ProgressHolder(View itemView) {
+            super(itemView);
+        }
+        @Override
+        protected void clear() {
+        }
+    }
 }

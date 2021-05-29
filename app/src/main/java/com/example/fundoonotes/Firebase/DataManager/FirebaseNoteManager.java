@@ -3,7 +3,6 @@ package com.example.fundoonotes.Firebase.DataManager;
 import android.util.Log;
 
 import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
-import com.example.fundoonotes.Firebase.Model.FirebaseUserModel;
 import com.example.fundoonotes.HelperClasses.CallBack;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -11,7 +10,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -41,9 +39,7 @@ public class FirebaseNoteManager implements NoteManager {
         ArrayList<FirebaseNoteModel> notesList = new ArrayList<FirebaseNoteModel>();
         String userId = firebaseUser.getUid();
         firebaseFirestore.collection(COLLECTIONS).document(userId)
-                .collection(NOTES_COLLECTIONS)
-                .orderBy("creationDate", Query.Direction.DESCENDING)
-                .get()
+                .collection(NOTES_COLLECTIONS).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -52,16 +48,16 @@ public class FirebaseNoteManager implements NoteManager {
                                     "onSuccess: " + queryDocumentSnapshots
                                             .getDocuments().get(index));
 
-                            String title = queryDocumentSnapshots.getDocuments()
-                                    .get(index).getString(NOTE_TITLE);
-                            String description = queryDocumentSnapshots.getDocuments()
-                                    .get(index).getString(NOTE_DESCRIPTION);
-                            String noteId = queryDocumentSnapshots.getDocuments()
-                                    .get(index).getId();
+                            DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(index);
+
+                            String title = documentSnapshot.getString(NOTE_TITLE);
+                            String description = documentSnapshot.getString(NOTE_DESCRIPTION);
+                            String noteId = documentSnapshot.getId();
+                            long timestamp = documentSnapshot.getLong("creationDate");
 
                             Log.e(TAG,"AllNotes " + title + " " + noteId);
 
-                            FirebaseNoteModel note = new FirebaseNoteModel(userId, noteId, title, description);
+                            FirebaseNoteModel note = new FirebaseNoteModel(userId, noteId, title, description, timestamp);
                             notesList.add(note);
                         }
                         listener.onSuccess(notesList);

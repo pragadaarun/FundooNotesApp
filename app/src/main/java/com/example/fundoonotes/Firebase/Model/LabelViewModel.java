@@ -18,7 +18,6 @@ public class LabelViewModel extends ViewModel {
     private static final String TAG = "LabelViewModel";
     private LabelManager labelManager;
 
-
     public LabelViewModel() {
         labelManager = new FirebaseLabelManager();
         loadLabel();

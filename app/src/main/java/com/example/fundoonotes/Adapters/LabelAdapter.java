@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.example.fundoonotes.Firebase.DataManager.FirebaseLabelManager;
 import com.example.fundoonotes.Firebase.Model.FirebaseLabelModel;
+import com.example.fundoonotes.HelperClasses.OnLabelListener;
 import com.example.fundoonotes.R;
 
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ public class LabelAdapter extends RecyclerView.Adapter<LabelAdapter.LabelViewHol
     private ArrayList<FirebaseLabelModel> labelList;
     FirebaseLabelManager labelManager;
     private OnLabelListener onLabellistener;
-
 
     public LabelAdapter(ArrayList<FirebaseLabelModel> labelList, OnLabelListener onLabellistener) {
         this.labelList = labelList;
@@ -49,7 +49,6 @@ public class LabelAdapter extends RecyclerView.Adapter<LabelAdapter.LabelViewHol
 
     public FirebaseLabelModel getItem(int position) {
         return labelList.get(position);
-
     }
 
     public void removeLabel(int position) {
@@ -77,9 +76,5 @@ public class LabelAdapter extends RecyclerView.Adapter<LabelAdapter.LabelViewHol
         public void onClick(View v) {
             onLabelListener.OnLabelClick(getBindingAdapterPosition(), v);
         }
-    }
-
-    public interface OnLabelListener {
-        void OnLabelClick(int position, View viewHolder);
     }
 }

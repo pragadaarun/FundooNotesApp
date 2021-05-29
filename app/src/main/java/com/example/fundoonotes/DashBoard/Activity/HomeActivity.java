@@ -23,12 +23,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.fundoonotes.DashBoard.Fragments.Labels.AddLabelListener;
 import com.example.fundoonotes.DashBoard.Fragments.Labels.LabelFragment;
 import com.example.fundoonotes.DashBoard.Fragments.Notes.AddNoteFragment;
 import com.example.fundoonotes.DashBoard.Fragments.ArchiveFragment;
 import com.example.fundoonotes.DashBoard.Fragments.Notes.NotesFragment;
 import com.example.fundoonotes.DashBoard.Fragments.TrashFragment;
+import com.example.fundoonotes.Firebase.Model.FirebaseLabelModel;
 import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
+import com.example.fundoonotes.HelperClasses.AddNoteListener;
 import com.example.fundoonotes.HelperClasses.CallBack;
 import com.example.fundoonotes.Firebase.DataManager.FirebaseUserManager;
 import com.example.fundoonotes.Firebase.Model.FirebaseUserModel;
@@ -46,7 +49,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-public class HomeActivity extends AppCompatActivity implements AddNoteFragment.AddNoteListener{
+public class HomeActivity extends AppCompatActivity implements AddNoteListener, AddLabelListener {
 
     private static final int ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE = 1000;
     private static final int PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE = 201;
@@ -306,5 +309,8 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
         displayHomeHamburger();
     }
 
-
+    @Override
+    public void onLabelAdded(FirebaseLabelModel label) {
+        labelFragment.addLabel(label);
+    }
 }

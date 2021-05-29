@@ -6,13 +6,15 @@ public class FirebaseNoteModel {
     private String noteID;
     private String title;
     private String description;
+    private long creationTime;
 
-    public FirebaseNoteModel(String userId, String noteID, String title, String description)
+    public FirebaseNoteModel(String userId, String noteID, String title, String description, long creationTime)
     {
         this.userId = userId;
         this.title = title;
         this.description = description;
         this.noteID = noteID;
+        this.creationTime = creationTime;
     }
 
     public String getTitle() {
@@ -45,5 +47,13 @@ public class FirebaseNoteModel {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public long getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(long creationTime) {
+        this.creationTime = creationTime;
     }
 }
