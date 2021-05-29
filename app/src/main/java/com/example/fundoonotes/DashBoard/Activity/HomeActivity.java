@@ -8,6 +8,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 
@@ -50,7 +52,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-public class HomeActivity extends AppCompatActivity implements AddNoteFragment.AddNoteListener{
+public class HomeActivity extends AppCompatActivity implements AddNoteFragment.AddNoteListener, TimePickerDialog.OnTimeSetListener {
 
     private static final int ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE = 1000;
     private static final int PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE = 201;
@@ -331,4 +333,8 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
     }
 
 
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+    }
 }

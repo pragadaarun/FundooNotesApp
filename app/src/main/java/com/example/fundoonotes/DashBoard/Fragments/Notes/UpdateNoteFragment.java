@@ -1,9 +1,14 @@
 package com.example.fundoonotes.DashBoard.Fragments.Notes;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -12,25 +17,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.fundoonotes.DashBoard.Activity.HomeActivity;
 import com.example.fundoonotes.R;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class UpdateNoteFragment extends Fragment {
+public class UpdateNoteFragment extends Fragment implements TimePickerDialog.OnTimeSetListener {
 
     private static final String TAG = "UpdateNoteFragment";
     EditText updateNoteTitle, updateNoteDescription;
-    Button updateButton;
+    Button updateButton, dateAndTime;
     FirebaseFirestore firebaseFirestore;
     FirebaseUser firebaseUser;
 
@@ -53,11 +61,17 @@ public class UpdateNoteFragment extends Fragment {
         updateNoteTitle = (EditText) view.findViewById(R.id.updateNoteTitle);
         updateNoteDescription = (EditText) view.findViewById(R.id.updateNoteDescription);
         updateButton =  view.findViewById(R.id.updateNoteButton);
+        dateAndTime = view.findViewById(R.id.date_picker_action);
 
         Log.e(TAG, "onCreateView: " + title);
 
         updateNoteTitle.setText(title);
         updateNoteDescription.setText(description);
+        
+        dateAndTime.setOnClickListener(v1 -> {
+            DialogFragment timePicker =new TimePickerFragment();
+            timePicker.show(getFragmentManager(),"time picker");
+        });
 
         updateButton.setOnClickListener(v -> {
             String newNoteTitle = updateNoteTitle.getText().toString();
@@ -93,4 +107,35 @@ public class UpdateNoteFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
     }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+//        Date date = Calendar.getInstance().getTime();
+//        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd | hh:mm:ss");
+//        String strDate = dateFormat.format(date);
+        int dayOfMonth = 0;
+        int month = 0;
+
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        c.set(Calendar.MINUTE, minute);
+        c.set(Calendar.SECOND, 0);
+
+        startAlarm(c);
+    }
+
+    private void startAlarm(Calendar c) {
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), AlertReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 1, intent, 0);
+
+        if (c.before(Calendar.getInstance())) {
+            c.add(Calendar.DATE, 1);
+        }
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+    }
+
 }

@@ -36,4 +36,5 @@
     <string name="save_label_button">Save Label</string>
     <string name="all_labels">All Labels</string>
     <string name="save_label">Save Label</string>
+    <string name="date_amp_time"><![CDATA[Date & Time]]></string>
 </resources>

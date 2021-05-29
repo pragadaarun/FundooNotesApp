@@ -59,6 +59,13 @@
                 android:textSize="18dp" />
 
             <Button
+                android:id="@+id/date_picker_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/date_amp_time"
+                android:textSize="14sp"/>
+
+            <Button
                 android:id="@+id/updateNoteButton"
                 android:layout_width="181dp"
                 android:layout_height="wrap_content"
