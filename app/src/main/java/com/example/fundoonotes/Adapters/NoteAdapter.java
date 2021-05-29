@@ -1,3 +1,4 @@
+
 package com.example.fundoonotes.Adapters;
 
 import android.util.Log;
@@ -85,7 +86,7 @@ public class NoteAdapter extends RecyclerView.Adapter<MyViewHolder> implements F
 
                 for(FirebaseNoteModel note : notesSearch) {
                     if(note.getTitle().toLowerCase().contains(filterPattern)
-                        || note.getDescription().toLowerCase().contains(filterPattern)) {
+                            || note.getDescription().toLowerCase().contains(filterPattern)) {
                         filteredList.add(note);
                     }
                 }

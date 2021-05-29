@@ -1,4 +1,3 @@
-
 package com.example.fundoonotes.SQLiteDataManager;
 
 import android.content.ContentValues;

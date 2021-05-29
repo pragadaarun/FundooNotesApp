@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,11 +37,14 @@ import com.example.fundoonotes.R;
 import com.example.fundoonotes.DashBoard.Fragments.ReminderFragment;
 import com.example.fundoonotes.UI.Activity.LoginRegisterActivity;
 import com.example.fundoonotes.UI.Activity.SharedPreferenceHelper;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -62,6 +66,7 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
     private ActionBarDrawerToggle toggle;
     private boolean mToolBarNavigationListenerIsRegistered;
     private  boolean isFragmentOpen;
+    private static final String TAG = "HomeActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,10 +103,10 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.home_fragment_container,
-                    notesFragment).commit();
+                            notesFragment).commit();
             navigationView.setCheckedItem(R.id.note);
         }
-        
+
         View headerView = navigationView.getHeaderView(0);
         TextView userName = headerView.findViewById(R.id.user_name_display);
         TextView userEmail = headerView.findViewById(R.id.user_email_display);
@@ -182,6 +187,8 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
             toggle.setToolbarNavigationClickListener(null);
             mToolBarNavigationListenerIsRegistered = false;
         }
+
+        getNotificationFromFirebase();
     }
 
     @Override
@@ -267,7 +274,7 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
                     new ReminderFragment()).commit();
         } else if (item.getItemId() == R.id.label) {
             getSupportFragmentManager().beginTransaction().replace(R.id.home_fragment_container,
-                     labelFragment).commit();
+                    labelFragment).commit();
         } else if (item.getItemId() == R.id.archive) {
             getSupportFragmentManager().beginTransaction().replace(R.id.home_fragment_container,
                     new ArchiveFragment()).commit();
@@ -282,7 +289,7 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
             startActivity(backToMain);
             finish();
         }  else {
-                //do nothing
+            //do nothing
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -304,6 +311,23 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
         notesFragment.addNote(note);
         isFragmentOpen = false;
         displayHomeHamburger();
+    }
+
+    private void getNotificationFromFirebase() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        
+                        if (!task.isSuccessful()) {
+                            Log.e(TAG, "FCM registration token failed ", task.getException());
+                        }
+
+                        String token = task.getResult();
+                        String message = token;
+                        Log.d(TAG, "token " + message);
+                    }
+                });
     }
 
 

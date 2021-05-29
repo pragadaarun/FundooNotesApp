@@ -93,7 +93,7 @@ public class FirebaseNoteManager implements NoteManager {
                     addListener.onSuccess(newNoteID);
                     Log.e(TAG, "newNoteID "+ newNoteID );
                 }).addOnFailureListener(addListener::onFailure
-                );
+        );
     }
 
     public void moveToTrash(String fromPath, String toPath, String noteId) {

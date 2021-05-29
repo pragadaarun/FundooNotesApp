@@ -1,11 +1,15 @@
 package com.example.fundoonotes.DashBoard.Fragments.Notes;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,6 +29,8 @@ import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import static com.example.fundoonotes.DashBoard.Activity.HomeActivity.addNote;
@@ -41,6 +47,9 @@ public class AddNoteFragment extends Fragment {
     NoteTableManager noteTableManager;
     AddNoteListener addNoteListener;
     DatabaseHelper databaseHelper = DatabaseHelper.getInstance(getContext());
+    private static final String CHANNEL_ID = "NewNote";
+    private static final String CHANNEL_NAME = "Note Added";
+    private static final String CHANNEL_DESCRIPTION = "Note Added with Title ";
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -82,6 +91,20 @@ public class AddNoteFragment extends Fragment {
                     Toast.makeText(getContext(),
                             "Note Created Successfully",
                             Toast.LENGTH_SHORT).show();
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+                        NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
+                        notificationManager.createNotificationChannel(notificationChannel);
+                    }
+                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
+                            .setContentTitle(CHANNEL_NAME)
+                            .setContentText(CHANNEL_DESCRIPTION + title)
+                            .setSmallIcon(R.drawable.ic_fundoo_icon);
+                    NotificationManagerCompat managerCompat = NotificationManagerCompat.from(getContext());
+                    managerCompat.notify(999, notificationBuilder.build());
+
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     FirebaseNoteModel note = new FirebaseNoteModel(userId, data, title, description);
                     addNoteListener.onNoteAdded(note);
                     docID = data;
