@@ -64,8 +64,15 @@
                 android:id="@+id/add_date_picker_action"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/date_amp_time"
-                android:textSize="20sp" />
+                android:text="@string/date_display"
+                android:textSize="14sp"/>
+
+            <Button
+                android:id="@+id/add_time_picker_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/time_display"
+                android:textSize="14sp"/>
 
             <Button
                 android:id="@+id/saveNoteButton"

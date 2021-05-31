@@ -8,14 +8,20 @@ import android.content.ContextWrapper;
 import android.os.Build;
 
 import com.example.fundoonotes.R;
+import com.example.fundoonotes.UI.Activity.SharedPreferenceHelper;
 
 import androidx.core.app.NotificationCompat;
 
 public class NotificationHelper extends ContextWrapper {
     public static final String channelID = "channelID";
     public static final String channelName = "Channel Name";
+    SharedPreferenceHelper sharedPreferenceHelper = new SharedPreferenceHelper(this);
+
+    private String title = sharedPreferenceHelper.getNoteTitle();
+    private String description = sharedPreferenceHelper.getNoteDescription();
 
     private NotificationManager mManager;
+
 
     public NotificationHelper(Context base) {
         super(base);
@@ -41,8 +47,8 @@ public class NotificationHelper extends ContextWrapper {
 
     public NotificationCompat.Builder getChannelNotification() {
         return new NotificationCompat.Builder(getApplicationContext(), channelID)
-                .setContentTitle("Alarm!")
-                .setContentText("Your AlarmManager is working.")
+                .setContentTitle(title)
+                .setContentText(description)
                 .setSmallIcon(R.drawable.ic_fundoo_icon);
     }
 }

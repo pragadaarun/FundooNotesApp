@@ -17,10 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.fundoonotes.R;
+import com.example.fundoonotes.UI.Activity.SharedPreferenceHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -34,13 +36,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class UpdateNoteFragment extends Fragment implements TimePickerDialog.OnTimeSetListener {
+public class UpdateNoteFragment extends Fragment {
 
     private static final String TAG = "UpdateNoteFragment";
     EditText updateNoteTitle, updateNoteDescription;
-    Button updateButton, dateAndTime;
+    Button updateButton, datePickerAction, timePickerAction;
     FirebaseFirestore firebaseFirestore;
     FirebaseUser firebaseUser;
+    public Calendar dateTimeSchedule;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,14 +64,22 @@ public class UpdateNoteFragment extends Fragment implements TimePickerDialog.OnT
         updateNoteTitle = (EditText) view.findViewById(R.id.updateNoteTitle);
         updateNoteDescription = (EditText) view.findViewById(R.id.updateNoteDescription);
         updateButton =  view.findViewById(R.id.updateNoteButton);
-        dateAndTime = view.findViewById(R.id.date_picker_action);
+        datePickerAction = view.findViewById(R.id.date_picker_action);
+        timePickerAction = view.findViewById(R.id.time_picker_action);
+        SharedPreferenceHelper sharedPreferenceHelper = new SharedPreferenceHelper(getContext());
+        dateTimeSchedule = Calendar.getInstance();
 
         Log.e(TAG, "onCreateView: " + title);
 
         updateNoteTitle.setText(title);
         updateNoteDescription.setText(description);
-        
-        dateAndTime.setOnClickListener(v1 -> {
+
+        datePickerAction.setOnClickListener(v -> {
+            DialogFragment datePicker = new DatePickerFragment();
+            datePicker.show(getFragmentManager(), "date picker");
+        } );
+
+        timePickerAction.setOnClickListener(v -> {
             DialogFragment timePicker =new TimePickerFragment();
             timePicker.show(getFragmentManager(),"time picker");
         });
@@ -76,6 +87,7 @@ public class UpdateNoteFragment extends Fragment implements TimePickerDialog.OnT
         updateButton.setOnClickListener(v -> {
             String newNoteTitle = updateNoteTitle.getText().toString();
             String newNoteDescription = updateNoteDescription.getText().toString();
+
 
             if (!newNoteTitle.isEmpty() && !newNoteDescription.isEmpty()) {
                 firebaseFirestore=FirebaseFirestore.getInstance();
@@ -90,6 +102,9 @@ public class UpdateNoteFragment extends Fragment implements TimePickerDialog.OnT
                 documentReference.set(note).addOnSuccessListener(aVoid -> {
                     Toast.makeText(getContext(),"Note is updated",
                             Toast.LENGTH_SHORT).show();
+                    sharedPreferenceHelper.setNoteTitle(newNoteTitle);
+                    sharedPreferenceHelper.setNoteDescription(newNoteDescription);
+                    startAlarm(dateTimeSchedule);
                     getFragmentManager().popBackStack();
                 }).addOnFailureListener(e ->
                         Toast.makeText(getContext(),
@@ -108,22 +123,22 @@ public class UpdateNoteFragment extends Fragment implements TimePickerDialog.OnT
         super.onDestroy();
     }
 
-    @Override
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-//        Date date = Calendar.getInstance().getTime();
-//        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd | hh:mm:ss");
-//        String strDate = dateFormat.format(date);
-        int dayOfMonth = 0;
-        int month = 0;
+    public void timeView(Calendar timeScheduled) {
+        String timeText = "Scheduled Time : ";
 
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.MONTH, month);
-        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        c.set(Calendar.MINUTE, minute);
-        c.set(Calendar.SECOND, 0);
+        timeText += DateFormat.getTimeInstance(DateFormat.SHORT).format(timeScheduled.getTime());
 
-        startAlarm(c);
+        Log.e(TAG, "timeView: " + timeText );
+        timePickerAction.setText(timeText);
+    }
+
+    public void dateView(Calendar dateScheduled) {
+        String dateText = "Scheduled Date : ";
+
+        dateText += DateFormat.getDateInstance(DateFormat.SHORT).format(dateScheduled.getTime());
+
+        Log.e(TAG, "dateView: " + dateText );
+        datePickerAction.setText(dateText);
     }
 
     private void startAlarm(Calendar c) {

@@ -37,6 +37,7 @@ public class NotesFragment extends Fragment {
     private NoteAdapter notesAdapter;
     private NotesViewModel notesViewModel;
     private RecyclerView.LayoutManager layoutManager;
+    public UpdateNoteFragment updateNoteFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,7 +84,7 @@ public class NotesFragment extends Fragment {
                                     String description = notesAdapter.getItem(position).getDescription();
                                     String noteID = notesAdapter.getItem(position).getNoteID();
                                     //Put the value
-                                    UpdateNoteFragment updateNoteFragment = new UpdateNoteFragment();
+                                    updateNoteFragment = new UpdateNoteFragment();
                                     Bundle noteToUpdate = new Bundle();
 
                                     noteToUpdate.putString("title", title);

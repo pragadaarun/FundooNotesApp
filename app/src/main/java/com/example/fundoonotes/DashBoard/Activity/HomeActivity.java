@@ -8,7 +8,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -19,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -29,6 +34,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.fundoonotes.DashBoard.Fragments.Labels.LabelFragment;
 import com.example.fundoonotes.DashBoard.Fragments.Notes.AddNoteFragment;
 import com.example.fundoonotes.DashBoard.Fragments.ArchiveFragment;
+import com.example.fundoonotes.DashBoard.Fragments.Notes.AlertReceiver;
 import com.example.fundoonotes.DashBoard.Fragments.Notes.NotesFragment;
 import com.example.fundoonotes.DashBoard.Fragments.TrashFragment;
 import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
@@ -52,7 +58,11 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-public class HomeActivity extends AppCompatActivity implements AddNoteFragment.AddNoteListener, TimePickerDialog.OnTimeSetListener {
+import java.util.Calendar;
+
+public class HomeActivity extends AppCompatActivity
+        implements AddNoteFragment.AddNoteListener, TimePickerDialog.OnTimeSetListener,
+        DatePickerDialog.OnDateSetListener {
 
     private static final int ACTIVITY_READ_EXTERNAL_IMAGE_REQUEST_CODE = 1000;
     private static final int PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE = 201;
@@ -332,9 +342,29 @@ public class HomeActivity extends AppCompatActivity implements AddNoteFragment.A
                 });
     }
 
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+//        Calendar dateScheduled = Calendar.getInstance();
+        notesFragment.updateNoteFragment.dateTimeSchedule.set(Calendar.YEAR,year);
+        notesFragment.updateNoteFragment.dateTimeSchedule.set(Calendar.MONTH, month);
+        notesFragment.updateNoteFragment.dateTimeSchedule.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        Log.e(TAG, "onDateSet: " +  notesFragment.updateNoteFragment.dateTimeSchedule );
+        notesFragment.updateNoteFragment.dateView( notesFragment.updateNoteFragment.dateTimeSchedule);
+    }
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+//        Date date = Calendar.getInstance().getTime();
+//        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd | hh:mm:ss");
+//        String strDate = dateFormat.format(date);
 
+//        Calendar timeScheduled = Calendar.getInstance();
+        notesFragment.updateNoteFragment.dateTimeSchedule.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        notesFragment.updateNoteFragment.dateTimeSchedule.set(Calendar.MINUTE, minute);
+        notesFragment.updateNoteFragment.dateTimeSchedule.set(Calendar.SECOND, 0);
+
+        Log.e(TAG, "onTimeSet: " +  notesFragment.updateNoteFragment.dateTimeSchedule );
+        notesFragment.updateNoteFragment.timeView( notesFragment.updateNoteFragment.dateTimeSchedule);
     }
+
 }
