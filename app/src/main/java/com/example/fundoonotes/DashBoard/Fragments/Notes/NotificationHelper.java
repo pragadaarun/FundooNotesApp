@@ -3,10 +3,15 @@ package com.example.fundoonotes.DashBoard.Fragments.Notes;
 import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 
+import com.example.fundoonotes.DashBoard.Activity.HomeActivity;
 import com.example.fundoonotes.R;
 import com.example.fundoonotes.UI.Activity.SharedPreferenceHelper;
 
@@ -46,9 +51,14 @@ public class NotificationHelper extends ContextWrapper {
     }
 
     public NotificationCompat.Builder getChannelNotification() {
-        return new NotificationCompat.Builder(getApplicationContext(), channelID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelID)
                 .setContentTitle(title)
                 .setContentText(description)
                 .setSmallIcon(R.drawable.ic_fundoo_icon);
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        builder.setSound(alarmSound);
+        builder.setContentIntent(PendingIntent.getActivity(this, // Context from onReceive method.
+                0, new Intent(this, HomeActivity.class), 0));
+        return builder;
     }
 }

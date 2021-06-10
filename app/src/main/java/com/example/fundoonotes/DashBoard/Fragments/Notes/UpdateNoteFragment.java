@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.fundoonotes.Firebase.Model.FirebaseNoteModel;
 import com.example.fundoonotes.R;
 import com.example.fundoonotes.UI.Activity.SharedPreferenceHelper;
 import com.google.firebase.auth.FirebaseAuth;
@@ -104,7 +105,7 @@ public class UpdateNoteFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                     sharedPreferenceHelper.setNoteTitle(newNoteTitle);
                     sharedPreferenceHelper.setNoteDescription(newNoteDescription);
-                    startAlarm(dateTimeSchedule);
+                    startAlarm(dateTimeSchedule, (FirebaseNoteModel) note);
                     getFragmentManager().popBackStack();
                 }).addOnFailureListener(e ->
                         Toast.makeText(getContext(),
@@ -141,9 +142,10 @@ public class UpdateNoteFragment extends Fragment {
         datePickerAction.setText(dateText);
     }
 
-    private void startAlarm(Calendar c) {
+    private void startAlarm(Calendar c, FirebaseNoteModel note) {
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getContext(), AlertReceiver.class);
+        intent.putExtra("note", note);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 1, intent, 0);
 
         if (c.before(Calendar.getInstance())) {
